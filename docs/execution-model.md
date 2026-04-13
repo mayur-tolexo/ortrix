@@ -2,7 +2,7 @@
 
 ## Sync vs Async Execution
 
-Flowd supports both synchronous and asynchronous task execution modes:
+Ortrix supports both synchronous and asynchronous task execution modes:
 
 ### Synchronous
 
@@ -33,7 +33,7 @@ Client ──▶ GetTaskStatus(task_id) ──▶ status/result (later)
 
 ## Push vs Pull: Why Push
 
-Flowd uses a **push-based** execution model. Tasks are pushed from the orchestrator to workers over persistent gRPC streams. This is a deliberate architectural choice.
+Ortrix uses a **push-based** execution model. Tasks are pushed from the orchestrator to workers over persistent gRPC streams. This is a deliberate architectural choice.
 
 ### Pull Model (rejected)
 
@@ -64,7 +64,7 @@ Advantages:
 
 ## Streaming Model (gRPC)
 
-Flowd uses **bidirectional gRPC streaming** between orchestrators and workers:
+Ortrix uses **bidirectional gRPC streaming** between orchestrators and workers:
 
 ```protobuf
 service WorkerService {

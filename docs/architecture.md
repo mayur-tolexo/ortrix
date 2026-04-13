@@ -1,8 +1,8 @@
-# Flowd Architecture
+# Ortrix Architecture
 
 ## High-Level Overview
 
-Flowd is a Kubernetes-native distributed workflow orchestrator designed for low-latency, high-throughput task execution. It separates the **control plane** from the **data plane** to minimize overhead on the critical execution path.
+Ortrix is a Kubernetes-native distributed workflow orchestrator designed for low-latency, high-throughput task execution. It separates the **control plane** from the **data plane** to minimize overhead on the critical execution path.
 
 ```
                          ┌─────────────────────────────────────────────┐
@@ -73,7 +73,7 @@ After initial routing resolution, clients and services communicate **directly** 
 
 ## Partition Model
 
-Flowd uses a **hash-based partitioning** scheme:
+Ortrix uses a **hash-based partitioning** scheme:
 
 ```
   partition_id = hash(workflow_id) % num_partitions
@@ -103,10 +103,10 @@ Key properties:
 
 ## Worker SDK Model
 
-Workers are **not** standalone services. The Flowd Worker SDK is embedded directly inside your existing services:
+Workers are **not** standalone services. The Ortrix Worker SDK is embedded directly inside your existing services:
 
 ```go
-import "github.com/mayur-tolexo/flowd/pkg/sdk"
+import "github.com/mayur-tolexo/ortrix/pkg/sdk"
 
 func main() {
     // Your existing service setup...
@@ -130,7 +130,7 @@ The SDK:
 4. **Executes handlers** and streams results back
 5. **Sends heartbeats** for liveness detection
 
-This model eliminates the need for separate worker infrastructure. Any service that imports the SDK becomes a Flowd worker, maintaining its own identity and lifecycle.
+This model eliminates the need for separate worker infrastructure. Any service that imports the SDK becomes an Ortrix worker, maintaining its own identity and lifecycle.
 
 ## Component Summary
 
@@ -171,7 +171,7 @@ No polling. No queue consumption delays. No gateway hop.
 
 ## Future Evolution
 
-Flowd's current architecture provides a solid foundation. The following areas represent the next evolution of the system:
+Ortrix's current architecture provides a solid foundation. The following areas represent the next evolution of the system:
 
 ### Adaptive Partition Placement
 

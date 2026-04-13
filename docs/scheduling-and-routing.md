@@ -2,7 +2,7 @@
 
 ## Capability-Based Routing
 
-Flowd routes tasks to workers based on **capabilities**, not static service names. Each worker declares what task types it can handle, and the orchestrator matches tasks to capable workers dynamically.
+Ortrix routes tasks to workers based on **capabilities**, not static service names. Each worker declares what task types it can handle, and the orchestrator matches tasks to capable workers dynamically.
 
 ### How It Works
 
@@ -73,7 +73,7 @@ The orchestrator supports routing rules that control traffic distribution across
 
 ## Locality-Aware Scheduling
 
-When multiple workers can handle a task, Flowd prefers workers that are **topologically close** to the orchestrator or to the data the task needs.
+When multiple workers can handle a task, Ortrix prefers workers that are **topologically close** to the orchestrator or to the data the task needs.
 
 ### Locality Tiers
 
@@ -222,7 +222,7 @@ Tasks are enqueued with a priority level. The scheduler ensures high-priority ta
 
 ### Fairness: Weighted Fair Queuing
 
-Pure priority scheduling would starve LOW tasks indefinitely when HIGH tasks keep arriving. Flowd uses **weighted fair queuing**:
+Pure priority scheduling would starve LOW tasks indefinitely when HIGH tasks keep arriving. Ortrix uses **weighted fair queuing**:
 
 ```
   Dispatch ratio:  HIGH : MEDIUM : LOW  =  6 : 3 : 1

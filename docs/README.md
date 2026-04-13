@@ -1,4 +1,4 @@
-# Flowd Documentation
+# Ortrix Documentation
 
 ## Design Documents
 
@@ -12,4 +12,4 @@
 | [Failure Handling](failure-handling.md) | Crash recovery, idempotency, saga compensation |
 | [Security](security.md) | mTLS, service identity, authorization |
 | [Performance](performance.md) | Latency analysis, batching, WAL optimization |
-| [Comparison](comparison.md) | Flowd vs Temporal — architecture, latency, tradeoffs |
+| [Comparison](comparison.md) | Ortrix vs Temporal — architecture, latency, tradeoffs |

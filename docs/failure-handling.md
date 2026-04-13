@@ -1,6 +1,6 @@
 # Failure Handling
 
-Flowd is designed to tolerate failures at every layer. This document covers failure modes, detection mechanisms, and recovery strategies.
+Ortrix is designed to tolerate failures at every layer. This document covers failure modes, detection mechanisms, and recovery strategies.
 
 ## Partition Crash (Orchestrator Failure)
 
@@ -229,7 +229,7 @@ For systems that don't support idempotency natively, run periodic reconciliation
 
 ```
   ┌─────────────┐     ┌──────────────┐     ┌──────────────┐
-  │ Flowd State  │────▶│ Reconciler   │◀────│ External     │
+  │ Ortrix State  │────▶│ Reconciler   │◀────│ External     │
   │ (expected)   │     │              │     │ System State │
   └─────────────┘     └──────┬───────┘     └──────────────┘
                               │
@@ -245,7 +245,7 @@ For systems that don't support idempotency natively, run periodic reconciliation
 
 ### Saga Pattern for Compensation
 
-For multi-step workflows, Flowd supports the **saga pattern**. Each step has a corresponding **compensation action** that undoes its effect:
+For multi-step workflows, Ortrix supports the **saga pattern**. Each step has a corresponding **compensation action** that undoes its effect:
 
 ```
   Workflow: Book Travel

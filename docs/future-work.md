@@ -1,6 +1,6 @@
-# Flowd — Future Work
+# Ortrix — Future Work
 
-This document outlines planned improvements and research directions for Flowd. Each section describes the problem, proposed approach, tradeoffs, and design considerations.
+This document outlines planned improvements and research directions for Ortrix. Each section describes the problem, proposed approach, tradeoffs, and design considerations.
 
 ---
 
@@ -522,7 +522,7 @@ Periodically compact the WAL by removing events for completed workflows:
 
 ### Problem
 
-A single Kubernetes cluster is a single failure domain. For disaster recovery and global latency optimization, Flowd must support geo-distributed operation.
+A single Kubernetes cluster is a single failure domain. For disaster recovery and global latency optimization, Ortrix must support geo-distributed operation.
 
 ### Proposed Solution
 

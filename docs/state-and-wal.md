@@ -2,7 +2,7 @@
 
 ## Event-Sourcing Model
 
-Flowd uses an **event-sourced** state model. Instead of storing the current state of each task, it stores the sequence of **events** that produced the state. Current state is derived by replaying events.
+Ortrix uses an **event-sourced** state model. Instead of storing the current state of each task, it stores the sequence of **events** that produced the state. Current state is derived by replaying events.
 
 ```
 Events (source of truth):
@@ -61,7 +61,7 @@ The WAL stores **events**, not full state snapshots. Each entry is a minimal rec
 
 ## Hybrid WAL Architecture
 
-Flowd uses a **hybrid WAL** for balancing speed and durability:
+Ortrix uses a **hybrid WAL** for balancing speed and durability:
 
 ```
   ┌──────────────┐     sync write     ┌──────────────┐
@@ -213,7 +213,7 @@ Task payloads can be arbitrarily large (file processing, batch data). Storing la
 ```json
 {
   "store": "s3",
-  "bucket": "flowd-payloads",
+  "bucket": "ortrix-payloads",
   "key": "tasks/abc-123/input",
   "size": 15728640,
   "checksum": "sha256:a1b2c3..."

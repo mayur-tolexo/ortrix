@@ -1,15 +1,15 @@
-# Contributing to Flowd
+# Contributing to Ortrix
 
-Thank you for your interest in contributing to Flowd! This guide will help you get started.
+Thank you for your interest in contributing to Ortrix! This guide will help you get started.
 
 ## Project Overview
 
-Flowd is a Kubernetes-native distributed workflow orchestrator. It uses partitioned execution, push-based task dispatch via gRPC streaming, and an event-sourced WAL for durability. See the [architecture docs](docs/architecture.md) for a deep dive.
+Ortrix is a Kubernetes-native distributed workflow orchestrator. It uses partitioned execution, push-based task dispatch via gRPC streaming, and an event-sourced WAL for durability. See the [architecture docs](docs/architecture.md) for a deep dive.
 
 ### Repository Structure
 
 ```
-flowd/
+ortrix/
 ├── api/proto/           # gRPC/Protobuf service definitions
 ├── cmd/
 │   ├── gateway/         # Gateway service (control plane)
@@ -304,4 +304,4 @@ refactor(routing): extract capability index to separate type
 - Start a discussion for questions or design proposals
 - Tag `@maintainers` for urgent items
 
-Thank you for contributing to Flowd!
+Thank you for contributing to Ortrix!
