@@ -3,6 +3,7 @@ module github.com/mayur-tolexo/ortrix
 go 1.24.13
 
 require (
+	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/sirupsen/logrus v1.9.4
 	github.com/swaggo/http-swagger v1.3.4
 	github.com/swaggo/swag v1.16.6
