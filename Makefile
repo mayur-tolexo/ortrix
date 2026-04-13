@@ -86,7 +86,7 @@ docker-gateway: ## Build Docker image for gateway
 	docker build -f cmd/gateway/Dockerfile -t $(DOCKER_REPO)/gateway:$(DOCKER_TAG) .
 
 docker-orchestrator: ## Build Docker image for orchestrator
-	docker build -f cmd/gateway/Dockerfile -t $(DOCKER_REPO)/orchestrator:$(DOCKER_TAG) .
+	docker build -f cmd/orchestrator/Dockerfile -t $(DOCKER_REPO)/orchestrator:$(DOCKER_TAG) .
 
 docker-all: docker-gateway docker-orchestrator ## Build all Docker images
 
