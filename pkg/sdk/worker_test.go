@@ -77,3 +77,32 @@ func TestStartNotImplemented(t *testing.T) {
 		t.Error("expected error from unimplemented Start")
 	}
 }
+
+func TestRegisterHandlerDuplicateType(t *testing.T) {
+	w := NewWorker("test-worker-7")
+
+	handler1 := func(_ context.Context, _ string, _ []byte) ([]byte, error) {
+		return []byte("v1"), nil
+	}
+	handler2 := func(_ context.Context, _ string, _ []byte) ([]byte, error) {
+		return []byte("v2"), nil
+	}
+
+	if err := w.RegisterHandler("image-resize", handler1); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if err := w.RegisterHandler("image-resize", handler2); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	caps := w.Capabilities()
+	if len(caps) != 1 {
+		t.Errorf("expected 1 capability, got %d: %v", len(caps), caps)
+	}
+
+	h, _ := w.GetHandler("image-resize")
+	result, _ := h(context.Background(), "task-1", nil)
+	if string(result) != "v2" {
+		t.Errorf("expected handler to be updated to v2, got %s", string(result))
+	}
+}

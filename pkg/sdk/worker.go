@@ -42,8 +42,10 @@ func (w *Worker) RegisterHandler(taskType string, handler TaskHandler) error {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 
+	if _, exists := w.handlers[taskType]; !exists {
+		w.capabilities = append(w.capabilities, taskType)
+	}
 	w.handlers[taskType] = handler
-	w.capabilities = append(w.capabilities, taskType)
 	return nil
 }
 
