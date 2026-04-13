@@ -253,12 +253,16 @@ Example with hybrid scoring:
 
   ┌────────────────────────────────────────────────────────────┐
   │  Worker     Zone          Locality   Load(free)  Combined  │
-  │  svc-a-1    us-east-1a   2 (same)   70%         1.48      │
-  │  svc-a-2    us-east-1a   2 (same)   20%         1.28      │
-  │  svc-c-1    us-west-2b   1 (diff)   90%         0.96      │
+  │  svc-a-1    us-east-1a   2 (same)   70%         1.76      │
+  │  svc-a-2    us-east-1a   2 (same)   20%         1.36      │
+  │  svc-c-1    us-west-2b   1 (diff)   90%         1.32      │
   │                                                            │
   │  Calculation for svc-a-1:                                  │
   │    (0.6 × 2) + (0.4 × 0.7 × 2) = 1.2 + 0.56 = 1.76      │
+  │  Calculation for svc-a-2:                                  │
+  │    (0.6 × 2) + (0.4 × 0.2 × 2) = 1.2 + 0.16 = 1.36      │
+  │  Calculation for svc-c-1:                                  │
+  │    (0.6 × 1) + (0.4 × 0.9 × 2) = 0.6 + 0.72 = 1.32      │
   │                                                            │
   │  Selected: svc-a-1 (highest combined score)                │
   └────────────────────────────────────────────────────────────┘
