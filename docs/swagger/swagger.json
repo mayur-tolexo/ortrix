@@ -1,0 +1,184 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "REST API for the Ortrix distributed workflow orchestrator.",
+        "title": "Ortrix Gateway API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "Ortrix Maintainers",
+            "url": "https://github.com/mayur-tolexo/ortrix"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/api/v1/workflows/start": {
+            "post": {
+                "description": "Starts a new workflow execution",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "workflow"
+                ],
+                "summary": "Start a workflow",
+                "parameters": [
+                    {
+                        "description": "Workflow input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.StartWorkflowRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.StartWorkflowResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/main.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/workflows/{id}/status": {
+            "get": {
+                "description": "Returns the current status of a workflow",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "workflow"
+                ],
+                "summary": "Get workflow status",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Workflow ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.GetWorkflowStatusResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/main.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/healthz": {
+            "get": {
+                "description": "Returns the health status of the gateway service",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "system"
+                ],
+                "summary": "Health check",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "main.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "description": "Error is the error message.",
+                    "type": "string",
+                    "example": "invalid request"
+                }
+            }
+        },
+        "main.GetWorkflowStatusResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "description": "Status is the current status of the workflow.",
+                    "type": "string",
+                    "example": "running"
+                },
+                "workflow_id": {
+                    "description": "WorkflowID is the unique identifier of the workflow.",
+                    "type": "string",
+                    "example": "wf-abc123"
+                }
+            }
+        },
+        "main.StartWorkflowRequest": {
+            "type": "object",
+            "properties": {
+                "input": {
+                    "description": "Input is the JSON payload for the workflow.",
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "workflow_name": {
+                    "description": "WorkflowName is the name of the workflow to execute.",
+                    "type": "string",
+                    "example": "order-processing"
+                }
+            }
+        },
+        "main.StartWorkflowResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "description": "Message provides additional details.",
+                    "type": "string",
+                    "example": "workflow started successfully"
+                },
+                "status": {
+                    "description": "Status is the current status of the workflow.",
+                    "type": "string",
+                    "example": "started"
+                },
+                "workflow_id": {
+                    "description": "WorkflowID is the unique identifier of the started workflow.",
+                    "type": "string",
+                    "example": "wf-abc123"
+                }
+            }
+        }
+    }
+}
