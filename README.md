@@ -163,18 +163,33 @@ ortrix/
 
 ## Documentation
 
+### Documentation Structure
+
 | Document | Description |
 |----------|-------------|
 | [Architecture](docs/architecture.md) | System design, control vs data plane, partition model |
 | [Execution Model](docs/execution-model.md) | Push-based dispatch, gRPC streaming, task lifecycle |
-| [State and WAL](docs/state-and-wal.md) | Event sourcing, snapshots, recovery, large payloads |
-| [Partitioning and Scaling](docs/partitioning-and-scaling.md) | Leases, rebalancing, failover, horizontal scaling |
+| [State and WAL](docs/state-and-wal.md) | Event sourcing, WAL format, snapshots, recovery |
 | [Scheduling and Routing](docs/scheduling-and-routing.md) | Capability routing, locality scheduling, priority queues |
 | [Failure Handling](docs/failure-handling.md) | Crash recovery, idempotency, saga compensation |
+| [Partitioning and Scaling](docs/partitioning-and-scaling.md) | Leases, rebalancing, failover, horizontal scaling |
 | [Security](docs/security.md) | mTLS, service identity, authorization |
 | [Performance](docs/performance.md) | Latency analysis, batching, WAL optimization |
 | [Comparison](docs/comparison.md) | Ortrix vs Temporal |
-| [Future Work](docs/future-work.md) | Roadmap: rebalancing, replication, multi-region |
+| [Future Work](docs/future-work.md) | Research directions: rebalancing, replication, multi-region |
+| [Proposals](docs/proposals/) | Design proposals for upcoming features |
+| [Roadmap](docs/roadmap.md) | Phased development plan with goals and deliverables |
+| [Testing](docs/testing.md) | Testing strategy, coverage requirements, CI enforcement |
+
+### Development Approach
+
+Ortrix follows a **proposal-driven development** model with **phased delivery** and **strong testing discipline**:
+
+- **Proposal-driven development**: Every significant feature begins as a written proposal in [`docs/proposals/`](docs/proposals/). Proposals define the problem, motivation, design, alternatives, tradeoffs, testing strategy, and rollout plan. This ensures architectural decisions are deliberate, reviewed, and documented before implementation begins.
+
+- **Phased delivery**: The [roadmap](docs/roadmap.md) defines six development phases, each building on the previous. Each phase delivers a functional, testable system with clear goals, deliverables, and dependencies. This enables incremental progress with confidence.
+
+- **Strong testing discipline**: The [testing strategy](docs/testing.md) mandates 80%+ code coverage, table-driven unit tests, integration tests for component interactions, and failure tests for crash recovery scenarios. All PRs must include tests, and CI fails if coverage drops below the threshold.
 
 ---
 
