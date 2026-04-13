@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.1
 // - protoc             v3.21.12
-// source: api/proto/flowd.proto
+// source: api/proto/ortrix.proto
 
 package proto
 
@@ -19,8 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	GatewayService_SubmitTask_FullMethodName    = "/flowd.GatewayService/SubmitTask"
-	GatewayService_GetTaskStatus_FullMethodName = "/flowd.GatewayService/GetTaskStatus"
+	GatewayService_SubmitTask_FullMethodName    = "/ortrix.GatewayService/SubmitTask"
+	GatewayService_GetTaskStatus_FullMethodName = "/ortrix.GatewayService/GetTaskStatus"
 )
 
 // GatewayServiceClient is the client API for GatewayService service.
@@ -146,7 +146,7 @@ func _GatewayService_GetTaskStatus_Handler(srv interface{}, ctx context.Context,
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var GatewayService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "flowd.GatewayService",
+	ServiceName: "ortrix.GatewayService",
 	HandlerType: (*GatewayServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -159,11 +159,11 @@ var GatewayService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/proto/flowd.proto",
+	Metadata: "api/proto/ortrix.proto",
 }
 
 const (
-	WorkerService_StreamTasks_FullMethodName = "/flowd.WorkerService/StreamTasks"
+	WorkerService_StreamTasks_FullMethodName = "/ortrix.WorkerService/StreamTasks"
 )
 
 // WorkerServiceClient is the client API for WorkerService service.
@@ -248,7 +248,7 @@ type WorkerService_StreamTasksServer = grpc.BidiStreamingServer[WorkerMessage, O
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var WorkerService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "flowd.WorkerService",
+	ServiceName: "ortrix.WorkerService",
 	HandlerType: (*WorkerServiceServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
@@ -259,5 +259,5 @@ var WorkerService_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "api/proto/flowd.proto",
+	Metadata: "api/proto/ortrix.proto",
 }

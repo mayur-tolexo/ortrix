@@ -1,4 +1,4 @@
-// Package main is the entry point for the Flowd gateway service.
+// Package main is the entry point for the Ortrix gateway service.
 // The gateway exposes a gRPC API for external clients to submit tasks
 // and query task status.
 package main
@@ -10,19 +10,19 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/mayur-tolexo/flowd/internal/config"
-	"github.com/mayur-tolexo/flowd/internal/logging"
+	"github.com/mayur-tolexo/ortrix/internal/config"
+	"github.com/mayur-tolexo/ortrix/internal/logging"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	pb "github.com/mayur-tolexo/flowd/api/proto"
+	pb "github.com/mayur-tolexo/ortrix/api/proto"
 )
 
 func main() {
 	cfg := config.Load()
 	logger := logging.NewLogger(cfg.LogLevel)
 
-	logger.WithField("port", cfg.GatewayPort).Info("starting flowd gateway")
+	logger.WithField("port", cfg.GatewayPort).Info("starting ortrix gateway")
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.GatewayPort))
 	if err != nil {

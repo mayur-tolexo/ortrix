@@ -7,11 +7,11 @@ import (
 
 func TestLoadDefaults(t *testing.T) {
 	// Unset any env vars that might be set.
-	os.Unsetenv("FLOWD_GATEWAY_PORT")
-	os.Unsetenv("FLOWD_ORCHESTRATOR_PORT")
-	os.Unsetenv("FLOWD_ORCHESTRATOR_ADDR")
-	os.Unsetenv("FLOWD_LOG_LEVEL")
-	os.Unsetenv("FLOWD_ENVIRONMENT")
+	os.Unsetenv("ORTRIX_GATEWAY_PORT")
+	os.Unsetenv("ORTRIX_ORCHESTRATOR_PORT")
+	os.Unsetenv("ORTRIX_ORCHESTRATOR_ADDR")
+	os.Unsetenv("ORTRIX_LOG_LEVEL")
+	os.Unsetenv("ORTRIX_ENVIRONMENT")
 
 	cfg := Load()
 
@@ -33,11 +33,11 @@ func TestLoadDefaults(t *testing.T) {
 }
 
 func TestLoadFromEnv(t *testing.T) {
-	t.Setenv("FLOWD_GATEWAY_PORT", "3000")
-	t.Setenv("FLOWD_ORCHESTRATOR_PORT", "4000")
-	t.Setenv("FLOWD_ORCHESTRATOR_ADDR", "orch:4000")
-	t.Setenv("FLOWD_LOG_LEVEL", "info")
-	t.Setenv("FLOWD_ENVIRONMENT", "production")
+	t.Setenv("ORTRIX_GATEWAY_PORT", "3000")
+	t.Setenv("ORTRIX_ORCHESTRATOR_PORT", "4000")
+	t.Setenv("ORTRIX_ORCHESTRATOR_ADDR", "orch:4000")
+	t.Setenv("ORTRIX_LOG_LEVEL", "info")
+	t.Setenv("ORTRIX_ENVIRONMENT", "production")
 
 	cfg := Load()
 
@@ -59,7 +59,7 @@ func TestLoadFromEnv(t *testing.T) {
 }
 
 func TestGetEnvIntInvalid(t *testing.T) {
-	t.Setenv("FLOWD_GATEWAY_PORT", "not-a-number")
+	t.Setenv("ORTRIX_GATEWAY_PORT", "not-a-number")
 
 	cfg := Load()
 

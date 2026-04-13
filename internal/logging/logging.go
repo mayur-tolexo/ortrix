@@ -1,4 +1,4 @@
-// Package logging provides structured logging for Flowd services.
+// Package logging provides structured logging for Ortrix services.
 // It uses logrus with JSON formatting for production-grade log output.
 package logging
 

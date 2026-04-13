@@ -1,4 +1,4 @@
-// Package partition will contain the partition management logic for Flowd.
+// Package partition will contain the partition management logic for Ortrix.
 //
 // Partition logic responsibilities:
 //   - Assign task partitions to orchestrator instances for distributed execution.

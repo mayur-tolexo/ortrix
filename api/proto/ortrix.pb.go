@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v3.21.12
-// source: api/proto/flowd.proto
+// source: api/proto/ortrix.proto
 
 package proto
 
@@ -36,7 +36,7 @@ type Task struct {
 
 func (x *Task) Reset() {
 	*x = Task{}
-	mi := &file_api_proto_flowd_proto_msgTypes[0]
+	mi := &file_api_proto_ortrix_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -48,7 +48,7 @@ func (x *Task) String() string {
 func (*Task) ProtoMessage() {}
 
 func (x *Task) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_flowd_proto_msgTypes[0]
+	mi := &file_api_proto_ortrix_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -61,7 +61,7 @@ func (x *Task) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Task.ProtoReflect.Descriptor instead.
 func (*Task) Descriptor() ([]byte, []int) {
-	return file_api_proto_flowd_proto_rawDescGZIP(), []int{0}
+	return file_api_proto_ortrix_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Task) GetId() string {
@@ -120,7 +120,7 @@ type TaskResult struct {
 
 func (x *TaskResult) Reset() {
 	*x = TaskResult{}
-	mi := &file_api_proto_flowd_proto_msgTypes[1]
+	mi := &file_api_proto_ortrix_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -132,7 +132,7 @@ func (x *TaskResult) String() string {
 func (*TaskResult) ProtoMessage() {}
 
 func (x *TaskResult) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_flowd_proto_msgTypes[1]
+	mi := &file_api_proto_ortrix_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -145,7 +145,7 @@ func (x *TaskResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskResult.ProtoReflect.Descriptor instead.
 func (*TaskResult) Descriptor() ([]byte, []int) {
-	return file_api_proto_flowd_proto_rawDescGZIP(), []int{1}
+	return file_api_proto_ortrix_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *TaskResult) GetTaskId() string {
@@ -193,7 +193,7 @@ type SubmitTaskRequest struct {
 
 func (x *SubmitTaskRequest) Reset() {
 	*x = SubmitTaskRequest{}
-	mi := &file_api_proto_flowd_proto_msgTypes[2]
+	mi := &file_api_proto_ortrix_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -205,7 +205,7 @@ func (x *SubmitTaskRequest) String() string {
 func (*SubmitTaskRequest) ProtoMessage() {}
 
 func (x *SubmitTaskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_flowd_proto_msgTypes[2]
+	mi := &file_api_proto_ortrix_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -218,7 +218,7 @@ func (x *SubmitTaskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubmitTaskRequest.ProtoReflect.Descriptor instead.
 func (*SubmitTaskRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_flowd_proto_rawDescGZIP(), []int{2}
+	return file_api_proto_ortrix_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *SubmitTaskRequest) GetTask() *Task {
@@ -240,7 +240,7 @@ type SubmitTaskResponse struct {
 
 func (x *SubmitTaskResponse) Reset() {
 	*x = SubmitTaskResponse{}
-	mi := &file_api_proto_flowd_proto_msgTypes[3]
+	mi := &file_api_proto_ortrix_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -252,7 +252,7 @@ func (x *SubmitTaskResponse) String() string {
 func (*SubmitTaskResponse) ProtoMessage() {}
 
 func (x *SubmitTaskResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_flowd_proto_msgTypes[3]
+	mi := &file_api_proto_ortrix_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -265,7 +265,7 @@ func (x *SubmitTaskResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubmitTaskResponse.ProtoReflect.Descriptor instead.
 func (*SubmitTaskResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_flowd_proto_rawDescGZIP(), []int{3}
+	return file_api_proto_ortrix_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *SubmitTaskResponse) GetTaskId() string {
@@ -299,7 +299,7 @@ type TaskStatusRequest struct {
 
 func (x *TaskStatusRequest) Reset() {
 	*x = TaskStatusRequest{}
-	mi := &file_api_proto_flowd_proto_msgTypes[4]
+	mi := &file_api_proto_ortrix_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -311,7 +311,7 @@ func (x *TaskStatusRequest) String() string {
 func (*TaskStatusRequest) ProtoMessage() {}
 
 func (x *TaskStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_flowd_proto_msgTypes[4]
+	mi := &file_api_proto_ortrix_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -324,7 +324,7 @@ func (x *TaskStatusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskStatusRequest.ProtoReflect.Descriptor instead.
 func (*TaskStatusRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_flowd_proto_rawDescGZIP(), []int{4}
+	return file_api_proto_ortrix_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *TaskStatusRequest) GetTaskId() string {
@@ -346,7 +346,7 @@ type TaskStatusResponse struct {
 
 func (x *TaskStatusResponse) Reset() {
 	*x = TaskStatusResponse{}
-	mi := &file_api_proto_flowd_proto_msgTypes[5]
+	mi := &file_api_proto_ortrix_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -358,7 +358,7 @@ func (x *TaskStatusResponse) String() string {
 func (*TaskStatusResponse) ProtoMessage() {}
 
 func (x *TaskStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_flowd_proto_msgTypes[5]
+	mi := &file_api_proto_ortrix_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -371,7 +371,7 @@ func (x *TaskStatusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskStatusResponse.ProtoReflect.Descriptor instead.
 func (*TaskStatusResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_flowd_proto_rawDescGZIP(), []int{5}
+	return file_api_proto_ortrix_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *TaskStatusResponse) GetTaskId() string {
@@ -412,7 +412,7 @@ type WorkerMessage struct {
 
 func (x *WorkerMessage) Reset() {
 	*x = WorkerMessage{}
-	mi := &file_api_proto_flowd_proto_msgTypes[6]
+	mi := &file_api_proto_ortrix_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -424,7 +424,7 @@ func (x *WorkerMessage) String() string {
 func (*WorkerMessage) ProtoMessage() {}
 
 func (x *WorkerMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_flowd_proto_msgTypes[6]
+	mi := &file_api_proto_ortrix_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -437,7 +437,7 @@ func (x *WorkerMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkerMessage.ProtoReflect.Descriptor instead.
 func (*WorkerMessage) Descriptor() ([]byte, []int) {
-	return file_api_proto_flowd_proto_rawDescGZIP(), []int{6}
+	return file_api_proto_ortrix_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *WorkerMessage) GetWorkerId() string {
@@ -518,7 +518,7 @@ type OrchestratorMessage struct {
 
 func (x *OrchestratorMessage) Reset() {
 	*x = OrchestratorMessage{}
-	mi := &file_api_proto_flowd_proto_msgTypes[7]
+	mi := &file_api_proto_ortrix_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -530,7 +530,7 @@ func (x *OrchestratorMessage) String() string {
 func (*OrchestratorMessage) ProtoMessage() {}
 
 func (x *OrchestratorMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_flowd_proto_msgTypes[7]
+	mi := &file_api_proto_ortrix_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -543,7 +543,7 @@ func (x *OrchestratorMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OrchestratorMessage.ProtoReflect.Descriptor instead.
 func (*OrchestratorMessage) Descriptor() ([]byte, []int) {
-	return file_api_proto_flowd_proto_rawDescGZIP(), []int{7}
+	return file_api_proto_ortrix_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *OrchestratorMessage) GetPayload() isOrchestratorMessage_Payload {
@@ -599,7 +599,7 @@ type WorkerRegistration struct {
 
 func (x *WorkerRegistration) Reset() {
 	*x = WorkerRegistration{}
-	mi := &file_api_proto_flowd_proto_msgTypes[8]
+	mi := &file_api_proto_ortrix_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -611,7 +611,7 @@ func (x *WorkerRegistration) String() string {
 func (*WorkerRegistration) ProtoMessage() {}
 
 func (x *WorkerRegistration) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_flowd_proto_msgTypes[8]
+	mi := &file_api_proto_ortrix_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -624,7 +624,7 @@ func (x *WorkerRegistration) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkerRegistration.ProtoReflect.Descriptor instead.
 func (*WorkerRegistration) Descriptor() ([]byte, []int) {
-	return file_api_proto_flowd_proto_rawDescGZIP(), []int{8}
+	return file_api_proto_ortrix_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *WorkerRegistration) GetWorkerId() string {
@@ -652,7 +652,7 @@ type Heartbeat struct {
 
 func (x *Heartbeat) Reset() {
 	*x = Heartbeat{}
-	mi := &file_api_proto_flowd_proto_msgTypes[9]
+	mi := &file_api_proto_ortrix_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -664,7 +664,7 @@ func (x *Heartbeat) String() string {
 func (*Heartbeat) ProtoMessage() {}
 
 func (x *Heartbeat) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_flowd_proto_msgTypes[9]
+	mi := &file_api_proto_ortrix_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -677,7 +677,7 @@ func (x *Heartbeat) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Heartbeat.ProtoReflect.Descriptor instead.
 func (*Heartbeat) Descriptor() ([]byte, []int) {
-	return file_api_proto_flowd_proto_rawDescGZIP(), []int{9}
+	return file_api_proto_ortrix_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *Heartbeat) GetWorkerId() string {
@@ -704,7 +704,7 @@ type Ack struct {
 
 func (x *Ack) Reset() {
 	*x = Ack{}
-	mi := &file_api_proto_flowd_proto_msgTypes[10]
+	mi := &file_api_proto_ortrix_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -716,7 +716,7 @@ func (x *Ack) String() string {
 func (*Ack) ProtoMessage() {}
 
 func (x *Ack) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_flowd_proto_msgTypes[10]
+	mi := &file_api_proto_ortrix_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -729,7 +729,7 @@ func (x *Ack) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Ack.ProtoReflect.Descriptor instead.
 func (*Ack) Descriptor() ([]byte, []int) {
-	return file_api_proto_flowd_proto_rawDescGZIP(), []int{10}
+	return file_api_proto_ortrix_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *Ack) GetMessage() string {
@@ -739,16 +739,16 @@ func (x *Ack) GetMessage() string {
 	return ""
 }
 
-var File_api_proto_flowd_proto protoreflect.FileDescriptor
+var File_api_proto_ortrix_proto protoreflect.FileDescriptor
 
-const file_api_proto_flowd_proto_rawDesc = "" +
+const file_api_proto_ortrix_proto_rawDesc = "" +
 	"\n" +
-	"\x15api/proto/flowd.proto\x12\x05flowd\"\xf3\x01\n" +
+	"\x16api/proto/ortrix.proto\x12\x06ortrix\"\xf4\x01\n" +
 	"\x04Task\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04type\x18\x02 \x01(\tR\x04type\x12\x18\n" +
-	"\apayload\x18\x03 \x01(\fR\apayload\x125\n" +
-	"\bmetadata\x18\x04 \x03(\v2\x19.flowd.Task.MetadataEntryR\bmetadata\x12\x1a\n" +
+	"\apayload\x18\x03 \x01(\fR\apayload\x126\n" +
+	"\bmetadata\x18\x04 \x03(\v2\x1a.ortrix.Task.MetadataEntryR\bmetadata\x12\x1a\n" +
 	"\bpriority\x18\x05 \x01(\x05R\bpriority\x12\x1d\n" +
 	"\n" +
 	"created_at\x18\x06 \x01(\x03R\tcreatedAt\x1a;\n" +
@@ -761,29 +761,28 @@ const file_api_proto_flowd_proto_rawDesc = "" +
 	"\asuccess\x18\x02 \x01(\bR\asuccess\x12\x16\n" +
 	"\x06output\x18\x03 \x01(\fR\x06output\x12\x14\n" +
 	"\x05error\x18\x04 \x01(\tR\x05error\x12!\n" +
-	"\fcompleted_at\x18\x05 \x01(\x03R\vcompletedAt\"4\n" +
-	"\x11SubmitTaskRequest\x12\x1f\n" +
-	"\x04task\x18\x01 \x01(\v2\v.flowd.TaskR\x04task\"c\n" +
+	"\fcompleted_at\x18\x05 \x01(\x03R\vcompletedAt\"5\n" +
+	"\x11SubmitTaskRequest\x12 \n" +
+	"\x04task\x18\x01 \x01(\v2\f.ortrix.TaskR\x04task\"c\n" +
 	"\x12SubmitTaskResponse\x12\x17\n" +
 	"\atask_id\x18\x01 \x01(\tR\x06taskId\x12\x1a\n" +
 	"\baccepted\x18\x02 \x01(\bR\baccepted\x12\x18\n" +
 	"\amessage\x18\x03 \x01(\tR\amessage\",\n" +
 	"\x11TaskStatusRequest\x12\x17\n" +
-	"\atask_id\x18\x01 \x01(\tR\x06taskId\"p\n" +
+	"\atask_id\x18\x01 \x01(\tR\x06taskId\"q\n" +
 	"\x12TaskStatusResponse\x12\x17\n" +
 	"\atask_id\x18\x01 \x01(\tR\x06taskId\x12\x16\n" +
-	"\x06status\x18\x02 \x01(\tR\x06status\x12)\n" +
-	"\x06result\x18\x03 \x01(\v2\x11.flowd.TaskResultR\x06result\"\xd7\x01\n" +
+	"\x06status\x18\x02 \x01(\tR\x06status\x12*\n" +
+	"\x06result\x18\x03 \x01(\v2\x12.ortrix.TaskResultR\x06result\"\xda\x01\n" +
 	"\rWorkerMessage\x12\x1b\n" +
-	"\tworker_id\x18\x01 \x01(\tR\bworkerId\x12?\n" +
-	"\fregistration\x18\x02 \x01(\v2\x19.flowd.WorkerRegistrationH\x00R\fregistration\x12+\n" +
-	"\x06result\x18\x03 \x01(\v2\x11.flowd.TaskResultH\x00R\x06result\x120\n" +
-	"\theartbeat\x18\x04 \x01(\v2\x10.flowd.HeartbeatH\x00R\theartbeatB\t\n" +
-	"\apayload\"c\n" +
-	"\x13OrchestratorMessage\x12!\n" +
-	"\x04task\x18\x01 \x01(\v2\v.flowd.TaskH\x00R\x04task\x12\x1e\n" +
-	"\x03ack\x18\x02 \x01(\v2\n" +
-	".flowd.AckH\x00R\x03ackB\t\n" +
+	"\tworker_id\x18\x01 \x01(\tR\bworkerId\x12@\n" +
+	"\fregistration\x18\x02 \x01(\v2\x1a.ortrix.WorkerRegistrationH\x00R\fregistration\x12,\n" +
+	"\x06result\x18\x03 \x01(\v2\x12.ortrix.TaskResultH\x00R\x06result\x121\n" +
+	"\theartbeat\x18\x04 \x01(\v2\x11.ortrix.HeartbeatH\x00R\theartbeatB\t\n" +
+	"\apayload\"e\n" +
+	"\x13OrchestratorMessage\x12\"\n" +
+	"\x04task\x18\x01 \x01(\v2\f.ortrix.TaskH\x00R\x04task\x12\x1f\n" +
+	"\x03ack\x18\x02 \x01(\v2\v.ortrix.AckH\x00R\x03ackB\t\n" +
 	"\apayload\"U\n" +
 	"\x12WorkerRegistration\x12\x1b\n" +
 	"\tworker_id\x18\x01 \x01(\tR\bworkerId\x12\"\n" +
@@ -792,56 +791,56 @@ const file_api_proto_flowd_proto_rawDesc = "" +
 	"\tworker_id\x18\x01 \x01(\tR\bworkerId\x12\x1c\n" +
 	"\ttimestamp\x18\x02 \x01(\x03R\ttimestamp\"\x1f\n" +
 	"\x03Ack\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage2\x99\x01\n" +
-	"\x0eGatewayService\x12A\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage2\x9d\x01\n" +
+	"\x0eGatewayService\x12C\n" +
 	"\n" +
-	"SubmitTask\x12\x18.flowd.SubmitTaskRequest\x1a\x19.flowd.SubmitTaskResponse\x12D\n" +
-	"\rGetTaskStatus\x12\x18.flowd.TaskStatusRequest\x1a\x19.flowd.TaskStatusResponse2T\n" +
-	"\rWorkerService\x12C\n" +
-	"\vStreamTasks\x12\x14.flowd.WorkerMessage\x1a\x1a.flowd.OrchestratorMessage(\x010\x01B)Z'github.com/mayur-tolexo/flowd/api/protob\x06proto3"
+	"SubmitTask\x12\x19.ortrix.SubmitTaskRequest\x1a\x1a.ortrix.SubmitTaskResponse\x12F\n" +
+	"\rGetTaskStatus\x12\x19.ortrix.TaskStatusRequest\x1a\x1a.ortrix.TaskStatusResponse2V\n" +
+	"\rWorkerService\x12E\n" +
+	"\vStreamTasks\x12\x15.ortrix.WorkerMessage\x1a\x1b.ortrix.OrchestratorMessage(\x010\x01B*Z(github.com/mayur-tolexo/ortrix/api/protob\x06proto3"
 
 var (
-	file_api_proto_flowd_proto_rawDescOnce sync.Once
-	file_api_proto_flowd_proto_rawDescData []byte
+	file_api_proto_ortrix_proto_rawDescOnce sync.Once
+	file_api_proto_ortrix_proto_rawDescData []byte
 )
 
-func file_api_proto_flowd_proto_rawDescGZIP() []byte {
-	file_api_proto_flowd_proto_rawDescOnce.Do(func() {
-		file_api_proto_flowd_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_api_proto_flowd_proto_rawDesc), len(file_api_proto_flowd_proto_rawDesc)))
+func file_api_proto_ortrix_proto_rawDescGZIP() []byte {
+	file_api_proto_ortrix_proto_rawDescOnce.Do(func() {
+		file_api_proto_ortrix_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_api_proto_ortrix_proto_rawDesc), len(file_api_proto_ortrix_proto_rawDesc)))
 	})
-	return file_api_proto_flowd_proto_rawDescData
+	return file_api_proto_ortrix_proto_rawDescData
 }
 
-var file_api_proto_flowd_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
-var file_api_proto_flowd_proto_goTypes = []any{
-	(*Task)(nil),                // 0: flowd.Task
-	(*TaskResult)(nil),          // 1: flowd.TaskResult
-	(*SubmitTaskRequest)(nil),   // 2: flowd.SubmitTaskRequest
-	(*SubmitTaskResponse)(nil),  // 3: flowd.SubmitTaskResponse
-	(*TaskStatusRequest)(nil),   // 4: flowd.TaskStatusRequest
-	(*TaskStatusResponse)(nil),  // 5: flowd.TaskStatusResponse
-	(*WorkerMessage)(nil),       // 6: flowd.WorkerMessage
-	(*OrchestratorMessage)(nil), // 7: flowd.OrchestratorMessage
-	(*WorkerRegistration)(nil),  // 8: flowd.WorkerRegistration
-	(*Heartbeat)(nil),           // 9: flowd.Heartbeat
-	(*Ack)(nil),                 // 10: flowd.Ack
-	nil,                         // 11: flowd.Task.MetadataEntry
+var file_api_proto_ortrix_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_api_proto_ortrix_proto_goTypes = []any{
+	(*Task)(nil),                // 0: ortrix.Task
+	(*TaskResult)(nil),          // 1: ortrix.TaskResult
+	(*SubmitTaskRequest)(nil),   // 2: ortrix.SubmitTaskRequest
+	(*SubmitTaskResponse)(nil),  // 3: ortrix.SubmitTaskResponse
+	(*TaskStatusRequest)(nil),   // 4: ortrix.TaskStatusRequest
+	(*TaskStatusResponse)(nil),  // 5: ortrix.TaskStatusResponse
+	(*WorkerMessage)(nil),       // 6: ortrix.WorkerMessage
+	(*OrchestratorMessage)(nil), // 7: ortrix.OrchestratorMessage
+	(*WorkerRegistration)(nil),  // 8: ortrix.WorkerRegistration
+	(*Heartbeat)(nil),           // 9: ortrix.Heartbeat
+	(*Ack)(nil),                 // 10: ortrix.Ack
+	nil,                         // 11: ortrix.Task.MetadataEntry
 }
-var file_api_proto_flowd_proto_depIdxs = []int32{
-	11, // 0: flowd.Task.metadata:type_name -> flowd.Task.MetadataEntry
-	0,  // 1: flowd.SubmitTaskRequest.task:type_name -> flowd.Task
-	1,  // 2: flowd.TaskStatusResponse.result:type_name -> flowd.TaskResult
-	8,  // 3: flowd.WorkerMessage.registration:type_name -> flowd.WorkerRegistration
-	1,  // 4: flowd.WorkerMessage.result:type_name -> flowd.TaskResult
-	9,  // 5: flowd.WorkerMessage.heartbeat:type_name -> flowd.Heartbeat
-	0,  // 6: flowd.OrchestratorMessage.task:type_name -> flowd.Task
-	10, // 7: flowd.OrchestratorMessage.ack:type_name -> flowd.Ack
-	2,  // 8: flowd.GatewayService.SubmitTask:input_type -> flowd.SubmitTaskRequest
-	4,  // 9: flowd.GatewayService.GetTaskStatus:input_type -> flowd.TaskStatusRequest
-	6,  // 10: flowd.WorkerService.StreamTasks:input_type -> flowd.WorkerMessage
-	3,  // 11: flowd.GatewayService.SubmitTask:output_type -> flowd.SubmitTaskResponse
-	5,  // 12: flowd.GatewayService.GetTaskStatus:output_type -> flowd.TaskStatusResponse
-	7,  // 13: flowd.WorkerService.StreamTasks:output_type -> flowd.OrchestratorMessage
+var file_api_proto_ortrix_proto_depIdxs = []int32{
+	11, // 0: ortrix.Task.metadata:type_name -> ortrix.Task.MetadataEntry
+	0,  // 1: ortrix.SubmitTaskRequest.task:type_name -> ortrix.Task
+	1,  // 2: ortrix.TaskStatusResponse.result:type_name -> ortrix.TaskResult
+	8,  // 3: ortrix.WorkerMessage.registration:type_name -> ortrix.WorkerRegistration
+	1,  // 4: ortrix.WorkerMessage.result:type_name -> ortrix.TaskResult
+	9,  // 5: ortrix.WorkerMessage.heartbeat:type_name -> ortrix.Heartbeat
+	0,  // 6: ortrix.OrchestratorMessage.task:type_name -> ortrix.Task
+	10, // 7: ortrix.OrchestratorMessage.ack:type_name -> ortrix.Ack
+	2,  // 8: ortrix.GatewayService.SubmitTask:input_type -> ortrix.SubmitTaskRequest
+	4,  // 9: ortrix.GatewayService.GetTaskStatus:input_type -> ortrix.TaskStatusRequest
+	6,  // 10: ortrix.WorkerService.StreamTasks:input_type -> ortrix.WorkerMessage
+	3,  // 11: ortrix.GatewayService.SubmitTask:output_type -> ortrix.SubmitTaskResponse
+	5,  // 12: ortrix.GatewayService.GetTaskStatus:output_type -> ortrix.TaskStatusResponse
+	7,  // 13: ortrix.WorkerService.StreamTasks:output_type -> ortrix.OrchestratorMessage
 	11, // [11:14] is the sub-list for method output_type
 	8,  // [8:11] is the sub-list for method input_type
 	8,  // [8:8] is the sub-list for extension type_name
@@ -849,17 +848,17 @@ var file_api_proto_flowd_proto_depIdxs = []int32{
 	0,  // [0:8] is the sub-list for field type_name
 }
 
-func init() { file_api_proto_flowd_proto_init() }
-func file_api_proto_flowd_proto_init() {
-	if File_api_proto_flowd_proto != nil {
+func init() { file_api_proto_ortrix_proto_init() }
+func file_api_proto_ortrix_proto_init() {
+	if File_api_proto_ortrix_proto != nil {
 		return
 	}
-	file_api_proto_flowd_proto_msgTypes[6].OneofWrappers = []any{
+	file_api_proto_ortrix_proto_msgTypes[6].OneofWrappers = []any{
 		(*WorkerMessage_Registration)(nil),
 		(*WorkerMessage_Result)(nil),
 		(*WorkerMessage_Heartbeat)(nil),
 	}
-	file_api_proto_flowd_proto_msgTypes[7].OneofWrappers = []any{
+	file_api_proto_ortrix_proto_msgTypes[7].OneofWrappers = []any{
 		(*OrchestratorMessage_Task)(nil),
 		(*OrchestratorMessage_Ack)(nil),
 	}
@@ -867,17 +866,17 @@ func file_api_proto_flowd_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_proto_flowd_proto_rawDesc), len(file_api_proto_flowd_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_proto_ortrix_proto_rawDesc), len(file_api_proto_ortrix_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   2,
 		},
-		GoTypes:           file_api_proto_flowd_proto_goTypes,
-		DependencyIndexes: file_api_proto_flowd_proto_depIdxs,
-		MessageInfos:      file_api_proto_flowd_proto_msgTypes,
+		GoTypes:           file_api_proto_ortrix_proto_goTypes,
+		DependencyIndexes: file_api_proto_ortrix_proto_depIdxs,
+		MessageInfos:      file_api_proto_ortrix_proto_msgTypes,
 	}.Build()
-	File_api_proto_flowd_proto = out.File
-	file_api_proto_flowd_proto_goTypes = nil
-	file_api_proto_flowd_proto_depIdxs = nil
+	File_api_proto_ortrix_proto = out.File
+	file_api_proto_ortrix_proto_goTypes = nil
+	file_api_proto_ortrix_proto_depIdxs = nil
 }

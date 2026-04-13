@@ -1,4 +1,4 @@
-module github.com/mayur-tolexo/flowd
+module github.com/mayur-tolexo/ortrix
 
 go 1.24.13
 

@@ -9,7 +9,7 @@ GO := go
 GOFLAGS := -ldflags="-s -w"
 
 # Docker settings
-DOCKER_REPO := flowd
+DOCKER_REPO := ortrix
 DOCKER_TAG := latest
 
 # ──────────────────────────────────────────────
@@ -54,7 +54,7 @@ proto:
 	protoc \
 		--go_out=. --go_opt=paths=source_relative \
 		--go-grpc_out=. --go-grpc_opt=paths=source_relative \
-		api/proto/flowd.proto
+		api/proto/ortrix.proto
 
 # ──────────────────────────────────────────────
 # Docker
@@ -73,10 +73,10 @@ docker-all: docker-gateway docker-orchestrator
 # ──────────────────────────────────────────────
 
 kind-create:
-	kind create cluster --name flowd
+	kind create cluster --name ortrix
 
 kind-delete:
-	kind delete cluster --name flowd
+	kind delete cluster --name ortrix
 
 # ──────────────────────────────────────────────
 # Clean

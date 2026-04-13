@@ -1,4 +1,4 @@
-// Package config provides configuration loading for Flowd services.
+// Package config provides configuration loading for Ortrix services.
 // Configuration is loaded from environment variables with optional defaults.
 package config
 
@@ -28,11 +28,11 @@ type Config struct {
 // Load reads configuration from environment variables with sensible defaults.
 func Load() *Config {
 	return &Config{
-		GatewayPort:      getEnvInt("FLOWD_GATEWAY_PORT", 8080),
-		OrchestratorPort: getEnvInt("FLOWD_ORCHESTRATOR_PORT", 9090),
-		OrchestratorAddr: getEnv("FLOWD_ORCHESTRATOR_ADDR", "localhost:9090"),
-		LogLevel:         getEnv("FLOWD_LOG_LEVEL", "debug"),
-		Environment:      getEnv("FLOWD_ENVIRONMENT", "development"),
+		GatewayPort:      getEnvInt("ORTRIX_GATEWAY_PORT", 8080),
+		OrchestratorPort: getEnvInt("ORTRIX_ORCHESTRATOR_PORT", 9090),
+		OrchestratorAddr: getEnv("ORTRIX_ORCHESTRATOR_ADDR", "localhost:9090"),
+		LogLevel:         getEnv("ORTRIX_LOG_LEVEL", "debug"),
+		Environment:      getEnv("ORTRIX_ENVIRONMENT", "development"),
 	}
 }
 

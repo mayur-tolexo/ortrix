@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 
-	pb "github.com/mayur-tolexo/flowd/api/proto"
+	pb "github.com/mayur-tolexo/ortrix/api/proto"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

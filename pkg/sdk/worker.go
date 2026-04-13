@@ -1,4 +1,4 @@
-// Package sdk provides the worker SDK for Flowd.
+// Package sdk provides the worker SDK for Ortrix.
 // Workers use this SDK to register capabilities, connect to the orchestrator,
 // and receive tasks for execution.
 package sdk
@@ -12,7 +12,7 @@ import (
 // TaskHandler is a function that processes a task payload and returns a result or error.
 type TaskHandler func(ctx context.Context, taskID string, payload []byte) ([]byte, error)
 
-// Worker represents a Flowd worker that can handle tasks.
+// Worker represents an Ortrix worker that can handle tasks.
 type Worker struct {
 	mu           sync.RWMutex
 	id           string
