@@ -1,5 +1,39 @@
 # Proposal: Streaming Protocol for Worker Communication
 
+## Table of Contents
+
+- [Status](#status)
+- [Summary](#summary)
+- [Motivation](#motivation)
+- [Protocol Definition](#protocol-definition)
+  - [RPC Signature](#rpc-signature)
+  - [Message Types](#message-types)
+- [Capacity Signaling](#capacity-signaling)
+  - [Registration Capacity](#registration-capacity)
+  - [Dynamic Capacity Updates](#dynamic-capacity-updates)
+  - [Orchestrator Capacity Tracking](#orchestrator-capacity-tracking)
+- [Flow Control](#flow-control)
+  - [Application-Level Flow Control](#application-level-flow-control)
+  - [Transport-Level Flow Control](#transport-level-flow-control)
+  - [Backpressure Propagation](#backpressure-propagation)
+- [Connection Lifecycle](#connection-lifecycle)
+  - [Establishment](#establishment)
+  - [Steady State](#steady-state)
+  - [Graceful Shutdown](#graceful-shutdown)
+  - [Ungraceful Disconnection](#ungraceful-disconnection)
+- [Failure Handling](#failure-handling)
+  - [Stream Disconnection](#stream-disconnection)
+  - [Worker Reconnection](#worker-reconnection)
+  - [Task Timeout](#task-timeout)
+  - [Duplicate Result Handling](#duplicate-result-handling)
+  - [Orchestrator Failover](#orchestrator-failover)
+- [Configuration](#configuration)
+- [Security Considerations](#security-considerations)
+
+---
+
+
+
 ## Status
 
 **Accepted** — This proposal defines the streaming protocol used for all orchestrator ↔ worker communication in Ortrix.

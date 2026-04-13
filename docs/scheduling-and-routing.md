@@ -1,5 +1,29 @@
 # Scheduling and Routing
 
+
+## Table of Contents
+
+- [Capability-Based Routing](#capability-based-routing)
+  - [How It Works](#how-it-works)
+  - [Why Not Static Binding](#why-not-static-binding)
+  - [Capability Registration](#capability-registration)
+  - [Versioning and Rollout](#versioning-and-rollout)
+- [Locality-Aware Scheduling](#locality-aware-scheduling)
+  - [Locality Tiers](#locality-tiers)
+  - [How Locality Is Determined](#how-locality-is-determined)
+  - [Scoring Algorithm](#scoring-algorithm)
+  - [When Locality Is Ignored](#when-locality-is-ignored)
+- [Worker Selection Strategy](#worker-selection-strategy)
+  - [Selection Example](#selection-example)
+- [Priority Queues and Fairness](#priority-queues-and-fairness)
+  - [Priority Levels](#priority-levels)
+  - [Queue Structure](#queue-structure)
+  - [Fairness: Weighted Fair Queuing](#fairness-weighted-fair-queuing)
+  - [Within-Priority Ordering](#within-priority-ordering)
+  - [Backpressure](#backpressure)
+
+---
+
 ## Capability-Based Routing
 
 Ortrix routes tasks to workers based on **capabilities**, not static service names. Each worker declares what task types it can handle, and the orchestrator matches tasks to capable workers dynamically.

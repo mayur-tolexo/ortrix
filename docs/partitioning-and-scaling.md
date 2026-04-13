@@ -1,5 +1,32 @@
 # Partitioning and Scaling
 
+
+## Table of Contents
+
+- [Partition Ownership](#partition-ownership)
+  - [Partition Assignment](#partition-assignment)
+  - [Ownership Table](#ownership-table)
+- [Lease Mechanism](#lease-mechanism)
+  - [Lease Lifecycle](#lease-lifecycle)
+  - [Lease Parameters](#lease-parameters)
+  - [Lease Protocol](#lease-protocol)
+  - [Fencing](#fencing)
+- [Rebalancing](#rebalancing)
+  - [Triggers](#triggers)
+  - [Rebalancing Process](#rebalancing-process)
+  - [Rebalancing Guarantees](#rebalancing-guarantees)
+- [Failover Handling](#failover-handling)
+  - [Failure Detection](#failure-detection)
+  - [Failover Timeline](#failover-timeline)
+  - [Reducing Failover Time](#reducing-failover-time)
+- [Horizontal Scaling](#horizontal-scaling)
+  - [Scaling Orchestrators](#scaling-orchestrators)
+  - [Scaling Workers](#scaling-workers)
+  - [Scaling Limits](#scaling-limits)
+  - [Auto-Scaling](#auto-scaling)
+
+---
+
 ## Partition Ownership
 
 Every workflow in Ortrix is assigned to a **partition**, and every partition has exactly **one owner** (an orchestrator instance). This single-owner model eliminates distributed coordination on the hot path.
