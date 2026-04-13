@@ -109,6 +109,7 @@ See [docs/security.md](docs/security.md) and [docs/proposals/streaming-protocol.
 
 - Go 1.24+
 - protoc (for proto generation)
+- [swag](https://github.com/swaggo/swag) (for Swagger doc generation)
 
 ### Build
 
@@ -124,6 +125,42 @@ make run-orchestrator
 
 # Terminal 2: Start the gateway
 make run-gateway
+```
+
+### API Documentation
+
+Ortrix exposes a REST API alongside its gRPC interface. API documentation is generated using [Swagger/OpenAPI](https://swagger.io/) via [swaggo/swag](https://github.com/swaggo/swag).
+
+#### Generate Swagger Docs
+
+```bash
+make swagger
+```
+
+This generates `swagger.json`, `swagger.yaml`, and `docs.go` into `docs/swagger/`.
+
+#### Run the Gateway with Swagger UI
+
+```bash
+make run-gateway
+```
+
+The gateway starts two servers:
+- **gRPC** on port `8080` (configurable via `ORTRIX_GATEWAY_PORT`)
+- **HTTP/REST** on port `8081` (gRPC port + 1)
+
+Access the Swagger UI at:
+
+```
+http://localhost:8081/swagger/index.html
+```
+
+> **Note:** Swagger UI is enabled by default in `development` mode. Set `ORTRIX_SWAGGER_ENABLED=false` to disable it, or `ORTRIX_ENVIRONMENT=production` to disable it automatically.
+
+#### Available Make Commands
+
+```bash
+make help
 ```
 
 ### Embed the Worker SDK
@@ -166,8 +203,10 @@ make docker-all
 ortrix/
 ├── api/proto/           # gRPC/Protobuf service definitions
 ├── cmd/
-│   ├── gateway/         # Gateway service entry point
+│   ├── gateway/         # Gateway service entry point (gRPC + HTTP/REST)
 │   └── orchestrator/    # Orchestrator service entry point
+├── docs/
+│   └── swagger/         # Generated Swagger/OpenAPI docs
 ├── internal/
 │   ├── config/          # Configuration management
 │   ├── logging/         # Structured logging
