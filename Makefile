@@ -56,7 +56,7 @@ lint: ## Run linter
 # ──────────────────────────────────────────────
 
 swagger: ## Generate Swagger docs into docs/swagger/
-	swag init -g cmd/gateway/main.go -o $(SWAGGER_DIR)
+	swag init -g cmd/gateway/main.go -o $(SWAGGER_DIR) --exclude api/proto
 
 # ──────────────────────────────────────────────
 # Run locally
