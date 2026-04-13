@@ -1,5 +1,33 @@
 # Performance
 
+
+## Table of Contents
+
+- [Latency Analysis: Push vs Pull](#latency-analysis-push-vs-pull)
+  - [Pull Model Latency](#pull-model-latency)
+  - [Push Model Latency](#push-model-latency)
+  - [End-to-End Comparison](#end-to-end-comparison)
+- [Batching](#batching)
+  - [WAL Write Batching](#wal-write-batching)
+  - [gRPC Message Batching](#grpc-message-batching)
+  - [Snapshot Batching](#snapshot-batching)
+- [WAL Optimization](#wal-optimization)
+  - [Memory-Mapped I/O](#memory-mapped-io)
+  - [Segment-Based WAL](#segment-based-wal)
+  - [Compression](#compression)
+- [Connection Reuse](#connection-reuse)
+  - [Persistent gRPC Streams](#persistent-grpc-streams)
+  - [Connection Pool (Gateway → Orchestrator)](#connection-pool-gateway-orchestrator)
+  - [HTTP/2 Multiplexing](#http2-multiplexing)
+- [Payload Optimization](#payload-optimization)
+  - [Small Payloads: Inline](#small-payloads-inline)
+  - [Large Payloads: External Reference](#large-payloads-external-reference)
+  - [Zero-Copy Where Possible](#zero-copy-where-possible)
+  - [Metadata Overhead](#metadata-overhead)
+- [Performance Tuning Parameters](#performance-tuning-parameters)
+
+---
+
 ## Latency Analysis: Push vs Pull
 
 The choice of push-based execution is the single largest performance decision in Ortrix's architecture.

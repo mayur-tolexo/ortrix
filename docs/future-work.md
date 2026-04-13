@@ -1,5 +1,49 @@
 # Ortrix — Future Work
 
+
+## Table of Contents
+
+- [1. Partition Rebalancing (Locality-Aware)](#1-partition-rebalancing-locality-aware)
+  - [Problem](#problem)
+  - [Proposed Solution](#proposed-solution)
+  - [Metrics to Track](#metrics-to-track)
+- [2. Load-Based Rebalancing](#2-load-based-rebalancing)
+  - [Problem](#problem)
+  - [Proposed Solution](#proposed-solution)
+- [3. Hot Partition Mitigation](#3-hot-partition-mitigation)
+  - [Problem](#problem)
+  - [Proposed Solutions](#proposed-solutions)
+- [4. Adaptive Worker Routing](#4-adaptive-worker-routing)
+  - [Problem](#problem)
+  - [Proposed Enhancements](#proposed-enhancements)
+- [5. Partition Replication (Warm Standby)](#5-partition-replication-warm-standby)
+  - [Problem](#problem)
+  - [Proposed Solution](#proposed-solution)
+- [6. Smart Initial Placement](#6-smart-initial-placement)
+  - [Problem](#problem)
+  - [Proposed Solution](#proposed-solution)
+- [7. Multi-Tenant Isolation](#7-multi-tenant-isolation)
+  - [Problem](#problem)
+  - [Proposed Solution](#proposed-solution)
+- [8. Advanced Scheduling](#8-advanced-scheduling)
+  - [Problem](#problem)
+  - [Proposed Enhancements](#proposed-enhancements)
+- [9. Observability & Debugging](#9-observability-debugging)
+  - [Problem](#problem)
+  - [Proposed Enhancements](#proposed-enhancements)
+- [10. Backpressure & Flow Control](#10-backpressure-flow-control)
+  - [Problem](#problem)
+  - [Proposed Solution](#proposed-solution)
+- [11. State Compaction & Archival](#11-state-compaction-archival)
+  - [Problem](#problem)
+  - [Proposed Solution](#proposed-solution)
+- [12. Multi-Cluster / Multi-Region](#12-multi-cluster-multi-region)
+  - [Problem](#problem)
+  - [Proposed Solution](#proposed-solution)
+- [Prioritization](#prioritization)
+
+---
+
 This document outlines planned improvements and research directions for Ortrix. Each section describes the problem, proposed approach, tradeoffs, and design considerations.
 
 ---

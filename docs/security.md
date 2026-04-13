@@ -1,5 +1,28 @@
 # Security
 
+
+## Table of Contents
+
+- [Overview](#overview)
+- [mTLS (Mutual TLS)](#mtls-mutual-tls)
+  - [Connections Secured by mTLS](#connections-secured-by-mtls)
+  - [Certificate Management](#certificate-management)
+  - [TLS Configuration](#tls-configuration)
+- [Service Identity](#service-identity)
+  - [Identity Format](#identity-format)
+  - [SPIFFE Integration (Optional)](#spiffe-integration-optional)
+- [Gateway as Security Boundary](#gateway-as-security-boundary)
+  - [Gateway Security Functions](#gateway-security-functions)
+  - [Network Policies](#network-policies)
+- [Capability-Level Authorization](#capability-level-authorization)
+  - [Authorization Model](#authorization-model)
+  - [Enforcement Points](#enforcement-points)
+  - [Capability Policy](#capability-policy)
+  - [Authorization Flow](#authorization-flow)
+  - [Principle of Least Privilege](#principle-of-least-privilege)
+
+---
+
 ## Overview
 
 Ortrix implements a defense-in-depth security model. Every component authenticates, every connection is encrypted, and authorization is enforced at the capability level.

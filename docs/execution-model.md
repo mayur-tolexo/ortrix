@@ -1,5 +1,26 @@
 # Execution Model
 
+
+## Table of Contents
+
+- [Sync vs Async Execution](#sync-vs-async-execution)
+  - [Synchronous](#synchronous)
+  - [Asynchronous](#asynchronous)
+- [Push vs Pull: Why Push](#push-vs-pull-why-push)
+  - [Pull Model (rejected)](#pull-model-rejected)
+  - [Push Model (chosen)](#push-model-chosen)
+- [Streaming Model (gRPC)](#streaming-model-grpc)
+  - [Stream Lifecycle](#stream-lifecycle)
+  - [Message Types](#message-types)
+- [Task Lifecycle](#task-lifecycle)
+  - [State Transitions and WAL](#state-transitions-and-wal)
+- [Payload Structure](#payload-structure)
+  - [Task](#task)
+  - [TaskResult](#taskresult)
+  - [Design Decisions](#design-decisions)
+
+---
+
 ## Sync vs Async Execution
 
 Ortrix supports both synchronous and asynchronous task execution modes:

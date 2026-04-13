@@ -1,5 +1,26 @@
 # Ortrix Architecture
 
+
+## Table of Contents
+
+- [High-Level Overview](#high-level-overview)
+- [Control Plane vs Data Plane](#control-plane-vs-data-plane)
+  - [Control Plane (Gateway)](#control-plane-gateway)
+  - [Data Plane (Orchestrator ↔ Workers)](#data-plane-orchestrator-workers)
+- [Gateway Role](#gateway-role)
+- [Partition Model](#partition-model)
+- [Worker SDK Model](#worker-sdk-model)
+- [Component Summary](#component-summary)
+- [Data Flow](#data-flow)
+  - [Task Submission (Full Path)](#task-submission-full-path)
+  - [Task Execution (Steady State)](#task-execution-steady-state)
+- [Future Evolution](#future-evolution)
+  - [Adaptive Partition Placement](#adaptive-partition-placement)
+  - [Load-Based Balancing](#load-based-balancing)
+  - [Partition Replication](#partition-replication)
+
+---
+
 ## High-Level Overview
 
 Ortrix is a Kubernetes-native distributed workflow orchestrator designed for low-latency, high-throughput task execution. It separates the **control plane** from the **data plane** to minimize overhead on the critical execution path.

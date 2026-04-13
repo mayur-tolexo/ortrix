@@ -1,5 +1,26 @@
 # Comparison: Ortrix vs Temporal
 
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Latency](#latency)
+  - [Task Dispatch Latency](#task-dispatch-latency)
+  - [Why the Difference Matters](#why-the-difference-matters)
+- [Architecture Differences](#architecture-differences)
+  - [Component Topology](#component-topology)
+  - [Key Architectural Differences](#key-architectural-differences)
+  - [Database Dependency](#database-dependency)
+  - [Worker Infrastructure](#worker-infrastructure)
+- [Tradeoffs](#tradeoffs)
+  - [Where Ortrix Wins](#where-ortrix-wins)
+  - [Where Temporal Wins](#where-temporal-wins)
+  - [When to Choose Ortrix](#when-to-choose-ortrix)
+  - [When to Choose Temporal](#when-to-choose-temporal)
+- [Summary](#summary)
+
+---
+
 ## Overview
 
 | Dimension          | Ortrix                                  | Temporal                               |

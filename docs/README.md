@@ -1,5 +1,12 @@
 # Ortrix Documentation
 
+
+## Table of Contents
+
+- [Design Documents](#design-documents)
+
+---
+
 ## Design Documents
 
 | Document | Description |

@@ -1,5 +1,33 @@
 # State Management and WAL
 
+
+## Table of Contents
+
+- [Event-Sourcing Model](#event-sourcing-model)
+  - [Why Event-Sourcing](#why-event-sourcing)
+- [What Goes Into the WAL](#what-goes-into-the-wal)
+  - [WAL Entry Structure](#wal-entry-structure)
+  - [Event Types Written to WAL](#event-types-written-to-wal)
+  - [What Does NOT Go Into the WAL](#what-does-not-go-into-the-wal)
+- [Hybrid WAL Architecture](#hybrid-wal-architecture)
+  - [Write Path](#write-path)
+- [Snapshot Strategy](#snapshot-strategy)
+  - [Snapshot Contents](#snapshot-contents)
+  - [When Snapshots Are Taken](#when-snapshots-are-taken)
+  - [Snapshot Lifecycle](#snapshot-lifecycle)
+- [Recovery Flow](#recovery-flow)
+  - [Recovery Steps](#recovery-steps)
+  - [Recovery Time](#recovery-time)
+  - [Failure During Recovery](#failure-during-recovery)
+- [Handling Large Payloads](#handling-large-payloads)
+  - [External Storage Strategy](#external-storage-strategy)
+  - [Rules](#rules)
+  - [Reference Format](#reference-format)
+  - [Benefits](#benefits)
+  - [Cleanup](#cleanup)
+
+---
+
 ## Event-Sourcing Model
 
 Ortrix uses an **event-sourced** state model. Instead of storing the current state of each task, it stores the sequence of **events** that produced the state. Current state is derived by replaying events.

@@ -1,5 +1,34 @@
 # Failure Handling
 
+
+## Table of Contents
+
+- [Partition Crash (Orchestrator Failure)](#partition-crash-orchestrator-failure)
+  - [Detection](#detection)
+  - [Recovery Steps](#recovery-steps)
+  - [Guarantees During Partition Crash](#guarantees-during-partition-crash)
+- [Worker Crash](#worker-crash)
+  - [Detection](#detection)
+  - [Recovery Steps](#recovery-steps)
+  - [Worker Crash vs Worker Slowness](#worker-crash-vs-worker-slowness)
+- [In-Flight Task Handling](#in-flight-task-handling)
+  - [Task States During Failure](#task-states-during-failure)
+  - [Re-Dispatch Logic](#re-dispatch-logic)
+  - [Timeout-Based Recovery](#timeout-based-recovery)
+- [Idempotency Strategy](#idempotency-strategy)
+  - [Idempotency Key](#idempotency-key)
+  - [Worker-Side Idempotency](#worker-side-idempotency)
+  - [Orchestrator-Side Deduplication](#orchestrator-side-deduplication)
+  - [Idempotency Guarantees](#idempotency-guarantees)
+- [Reconciliation for External Systems](#reconciliation-for-external-systems)
+  - [The Problem](#the-problem)
+  - [Solution: Idempotency + Reconciliation](#solution-idempotency-reconciliation)
+  - [Saga Pattern for Compensation](#saga-pattern-for-compensation)
+  - [Compensation Flow](#compensation-flow)
+- [Failure Summary Matrix](#failure-summary-matrix)
+
+---
+
 Ortrix is designed to tolerate failures at every layer. This document covers failure modes, detection mechanisms, and recovery strategies.
 
 ## Partition Crash (Orchestrator Failure)
