@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package flowd;
+package ortrix;
 
-option go_package = "github.com/mayur-tolexo/flowd/api/proto";
+option go_package = "github.com/mayur-tolexo/ortrix/api/proto";
 
 // Task represents a unit of work to be dispatched to a worker.
 message Task {

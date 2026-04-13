@@ -2,7 +2,7 @@
 
 ## Latency Analysis: Push vs Pull
 
-The choice of push-based execution is the single largest performance decision in Flowd's architecture.
+The choice of push-based execution is the single largest performance decision in Ortrix's architecture.
 
 ### Pull Model Latency
 
@@ -43,7 +43,7 @@ Push eliminates the polling floor entirely. Dispatch latency is bounded by netwo
 
 ### End-to-End Comparison
 
-| Metric                  | Pull (1s poll) | Push (Flowd) |
+| Metric                  | Pull (1s poll) | Push (Ortrix) |
 |------------------------|----------------|--------------|
 | Dispatch latency       | 500ms avg      | ~1ms         |
 | P99 dispatch latency   | ~1000ms        | ~5ms         |
@@ -52,11 +52,11 @@ Push eliminates the polling floor entirely. Dispatch latency is bounded by netwo
 
 ## Batching
 
-Flowd uses batching at multiple levels to amortize overhead.
+Ortrix uses batching at multiple levels to amortize overhead.
 
 ### WAL Write Batching
 
-Individual WAL writes are expensive due to `fsync`. Flowd batches WAL entries within a configurable window:
+Individual WAL writes are expensive due to `fsync`. Ortrix batches WAL entries within a configurable window:
 
 ```
   ┌───────────────────────────────────────┐

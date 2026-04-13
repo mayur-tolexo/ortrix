@@ -3,7 +3,7 @@ package main
 import (
 	"io"
 
-	pb "github.com/mayur-tolexo/flowd/api/proto"
+	pb "github.com/mayur-tolexo/ortrix/api/proto"
 	"github.com/sirupsen/logrus"
 )
 

@@ -1,4 +1,4 @@
-// Package wal will contain the Write-Ahead Log (WAL) logic for Flowd.
+// Package wal will contain the Write-Ahead Log (WAL) logic for Ortrix.
 //
 // WAL logic responsibilities:
 //   - Persist task state transitions before they are applied, ensuring durability.

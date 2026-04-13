@@ -1,8 +1,8 @@
-# Flowd
+# Ortrix
 
 **A low-latency, Kubernetes-native distributed workflow orchestrator.**
 
-Flowd is built on partitioned execution, push-based gRPC streaming, and locality-aware scheduling. It delivers sub-millisecond task dispatch — orders of magnitude faster than poll-based systems.
+Ortrix is a low-latency, Kubernetes-native distributed workflow orchestrator built on partitioned execution, streaming task dispatch, and locality-aware scheduling. It delivers sub-millisecond task dispatch — orders of magnitude faster than poll-based systems.
 
 ---
 
@@ -46,19 +46,19 @@ See [docs/architecture.md](docs/architecture.md) for the full design.
 
 ---
 
-## Why Flowd
+## Why Ortrix
 
 Traditional workflow engines use **poll-based** task dispatch. Workers repeatedly ask "any work for me?" — adding 500ms+ of latency on every task and wasting resources on empty polls.
 
-Flowd eliminates this with **push-based streaming**:
+Ortrix eliminates this with **push-based streaming**:
 
-| Metric              | Poll-based (e.g., Temporal) | Flowd (push)   |
+| Metric              | Poll-based (e.g., Temporal) | Ortrix (push)   |
 |--------------------|----------------------------|-----------------|
 | P50 dispatch       | ~500ms                     | ~1ms            |
 | P99 dispatch       | ~1000ms                    | ~5ms            |
 | Idle overhead      | Continuous polling          | Zero            |
 
-Flowd also eliminates the need for:
+Ortrix also eliminates the need for:
 - **External databases** — WAL provides durability without Cassandra/Postgres
 - **Separate worker infrastructure** — SDK embeds into existing services
 - **Complex deployment** — Kubernetes-native from day one
@@ -67,7 +67,7 @@ Flowd also eliminates the need for:
 
 ## Comparison with Existing Systems
 
-| Dimension        | Flowd                        | Temporal                      |
+| Dimension        | Ortrix                       | Temporal                      |
 |-----------------|------------------------------|-------------------------------|
 | Dispatch model  | Push (gRPC streaming)        | Pull (long polling)           |
 | Dispatch latency| ~1ms                         | ~500ms                        |
@@ -110,7 +110,7 @@ package main
 
 import (
     "context"
-    "github.com/mayur-tolexo/flowd/pkg/sdk"
+    "github.com/mayur-tolexo/ortrix/pkg/sdk"
 )
 
 func main() {
@@ -140,7 +140,7 @@ make docker-all
 ## Repository Structure
 
 ```
-flowd/
+ortrix/
 ├── api/proto/           # gRPC/Protobuf service definitions
 ├── cmd/
 │   ├── gateway/         # Gateway service entry point
@@ -173,14 +173,14 @@ flowd/
 | [Failure Handling](docs/failure-handling.md) | Crash recovery, idempotency, saga compensation |
 | [Security](docs/security.md) | mTLS, service identity, authorization |
 | [Performance](docs/performance.md) | Latency analysis, batching, WAL optimization |
-| [Comparison](docs/comparison.md) | Flowd vs Temporal |
+| [Comparison](docs/comparison.md) | Ortrix vs Temporal |
 | [Future Work](docs/future-work.md) | Roadmap: rebalancing, replication, multi-region |
 
 ---
 
 ## 🚧 Future Work
 
-Flowd is actively evolving. Key areas of upcoming development:
+Ortrix is actively evolving. Key areas of upcoming development:
 
 - **Locality-aware partition migration** — Move partitions closer to their execution zones, reducing cross-zone latency and egress costs
 - **Load-based rebalancing** — Detect hot orchestrator nodes and automatically redistribute partitions based on CPU, queue depth, and latency

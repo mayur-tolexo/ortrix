@@ -1,4 +1,4 @@
-// Package scheduler will contain the task scheduling logic for Flowd.
+// Package scheduler will contain the task scheduling logic for Ortrix.
 //
 // Scheduler responsibilities:
 //   - Accept tasks from the gateway and enqueue them for execution.

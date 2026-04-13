@@ -1,4 +1,4 @@
-// Package routing will contain the task routing logic for Flowd.
+// Package routing will contain the task routing logic for Ortrix.
 //
 // Routing logic responsibilities:
 //   - Route incoming tasks to the correct orchestrator partition.

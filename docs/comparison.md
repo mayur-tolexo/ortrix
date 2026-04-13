@@ -1,8 +1,8 @@
-# Comparison: Flowd vs Temporal
+# Comparison: Ortrix vs Temporal
 
 ## Overview
 
-| Dimension          | Flowd                                  | Temporal                               |
+| Dimension          | Ortrix                                  | Temporal                               |
 |--------------------|----------------------------------------|----------------------------------------|
 | **Model**          | Partitioned task orchestrator          | Workflow-as-code engine                |
 | **Execution**      | Push-based, gRPC streaming             | Pull-based, long polling               |
@@ -22,19 +22,19 @@
     Average: poll_interval / 2 = ~500ms (default 1s poll)
     Best case: ~200ms (network RTT + service hops)
 
-  Flowd (push):
+  Ortrix (push):
     Orchestrator ──stream──▶ Worker
     Average: ~1-2ms (direct stream, single hop)
     Best case: ~500μs (same-node)
 ```
 
-| Metric              | Temporal        | Flowd          | Improvement |
+| Metric              | Temporal        | Ortrix          | Improvement |
 |--------------------|-----------------|----------------|-------------|
 | P50 dispatch       | ~500ms          | ~1ms           | ~500x       |
 | P99 dispatch       | ~1000ms         | ~5ms           | ~200x       |
 | End-to-end (simple)| ~600ms          | ~3ms           | ~200x       |
 
-Flowd's push model eliminates the polling latency floor that is fundamental to Temporal's architecture.
+Ortrix's push model eliminates the polling latency floor that is fundamental to Temporal's architecture.
 
 ### Why the Difference Matters
 
@@ -49,7 +49,7 @@ The 500ms polling floor in Temporal makes it unsuitable for sub-10ms dispatch re
 For **long-running workflows** (hours/days):
 - The 500ms dispatch latency is negligible
 - Temporal's rich workflow semantics (timers, signals, queries) are more valuable
-- Flowd's latency advantage is less relevant
+- Ortrix's latency advantage is less relevant
 
 ## Architecture Differences
 
@@ -72,7 +72,7 @@ For **long-running workflows** (hours/days):
                 │  Worker   │  (separate process)
                 └──────────┘
 
-  Flowd Architecture:
+  Ortrix Architecture:
   ┌─────────┐   ┌──────────┐
   │ Client   │──▶│ Gateway  │  (control plane only)
   └─────────┘   └──────────┘
@@ -89,7 +89,7 @@ For **long-running workflows** (hours/days):
 
 ### Key Architectural Differences
 
-| Aspect               | Temporal                              | Flowd                                   |
+| Aspect               | Temporal                              | Ortrix                                   |
 |----------------------|---------------------------------------|-----------------------------------------|
 | **Service hops**     | Client → Frontend → Matching → History| Client → Gateway → Orchestrator → Worker|
 | **Data plane hops**  | 3 (Frontend, Matching, History)       | 1 (Orchestrator → Worker direct)        |
@@ -106,7 +106,7 @@ For **long-running workflows** (hours/days):
 - Requires database expertise to operate at scale
 - Database latency directly impacts workflow latency
 
-**Flowd** uses no external database:
+**Ortrix** uses no external database:
 - State is kept in-memory for reads
 - WAL provides durability (local + replicated)
 - Snapshots enable fast recovery
@@ -120,7 +120,7 @@ For **long-running workflows** (hours/days):
 - Each task type needs a dedicated worker fleet
 - Worker failures don't affect the service they work for
 
-**Flowd** workers are embedded in your services:
+**Ortrix** workers are embedded in your services:
 - No separate worker infrastructure to manage
 - Worker SDK runs inside your existing pods
 - Service declares capabilities, receives tasks on gRPC stream
@@ -128,7 +128,7 @@ For **long-running workflows** (hours/days):
 
 ## Tradeoffs
 
-### Where Flowd Wins
+### Where Ortrix Wins
 
 | Area                    | Advantage                                       |
 |------------------------|------------------------------------------------|
@@ -150,7 +150,7 @@ For **long-running workflows** (hours/days):
 | Long-running workflows | Better primitives for multi-day workflows      |
 | Community              | Large open-source community, Temporal Cloud    |
 
-### When to Choose Flowd
+### When to Choose Ortrix
 
 - You need **sub-10ms task dispatch latency**
 - You're running on **Kubernetes** and want native integration
@@ -170,15 +170,15 @@ For **long-running workflows** (hours/days):
 
 ## Summary
 
-Flowd and Temporal solve overlapping but distinct problems. Temporal is a **general-purpose workflow engine** optimized for correctness and rich workflow semantics. Flowd is a **high-performance task orchestrator** optimized for low latency and Kubernetes-native operation.
+Ortrix and Temporal solve overlapping but distinct problems. Temporal is a **general-purpose workflow engine** optimized for correctness and rich workflow semantics. Ortrix is a **high-performance task orchestrator** optimized for low latency and Kubernetes-native operation.
 
 ```
   Latency Spectrum:
 
   1ms        10ms       100ms      500ms      1s         10s
   ├──────────┤──────────┤──────────┤──────────┤──────────┤
-  │◀─ Flowd ─▶│                    │◀─ Temporal ──────────▶│
+  │◀─ Ortrix ─▶│                    │◀─ Temporal ──────────▶│
   │  sweet spot                    │   sweet spot          │
 ```
 
-Choose based on your primary constraint: if it's **latency and operational simplicity**, choose Flowd. If it's **workflow richness and ecosystem maturity**, choose Temporal.
+Choose based on your primary constraint: if it's **latency and operational simplicity**, choose Ortrix. If it's **workflow richness and ecosystem maturity**, choose Temporal.

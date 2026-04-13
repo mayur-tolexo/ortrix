@@ -2,7 +2,7 @@
 
 ## Partition Ownership
 
-Every workflow in Flowd is assigned to a **partition**, and every partition has exactly **one owner** (an orchestrator instance). This single-owner model eliminates distributed coordination on the hot path.
+Every workflow in Ortrix is assigned to a **partition**, and every partition has exactly **one owner** (an orchestrator instance). This single-owner model eliminates distributed coordination on the hot path.
 
 ```
   workflow_id ──hash──▶ partition_id ──lease──▶ orchestrator instance
@@ -211,7 +211,7 @@ Workers scale independently since they connect to orchestrators via gRPC streams
 
 ### Auto-Scaling
 
-Flowd integrates with Kubernetes HPA for automatic scaling:
+Ortrix integrates with Kubernetes HPA for automatic scaling:
 
 - **Orchestrators**: Scale based on partition load (tasks/second per partition)
 - **Workers**: Scale based on task queue depth or processing latency

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Flowd implements a defense-in-depth security model. Every component authenticates, every connection is encrypted, and authorization is enforced at the capability level.
+Ortrix implements a defense-in-depth security model. Every component authenticates, every connection is encrypted, and authorization is enforced at the capability level.
 
 ```
   ┌──────────────────────────────────────────────────────┐
@@ -18,7 +18,7 @@ Flowd implements a defense-in-depth security model. Every component authenticate
 
 ## mTLS (Mutual TLS)
 
-All gRPC connections in Flowd use **mutual TLS**. Both sides of every connection present and validate certificates.
+All gRPC connections in Ortrix use **mutual TLS**. Both sides of every connection present and validate certificates.
 
 ### Connections Secured by mTLS
 
@@ -40,7 +40,7 @@ All gRPC connections in Flowd use **mutual TLS**. Both sides of every connection
          └────── cert distribution ──────────────────┘
                        │
                 ┌──────▼───────┐
-                │  Flowd Pods   │
+                │  Ortrix Pods   │
                 │  (mounted as  │
                 │   volumes)    │
                 └──────────────┘
@@ -57,23 +57,23 @@ In Kubernetes:
 ```yaml
 tls:
   enabled: true
-  cert_file: /etc/flowd/tls/tls.crt
-  key_file: /etc/flowd/tls/tls.key
-  ca_file: /etc/flowd/tls/ca.crt
+  cert_file: /etc/ortrix/tls/tls.crt
+  key_file: /etc/ortrix/tls/tls.key
+  ca_file: /etc/ortrix/tls/ca.crt
   min_version: "1.3"           # TLS 1.3 minimum
   client_auth: "require"       # Mutual TLS enforced
 ```
 
 ## Service Identity
 
-Every Flowd component has a cryptographic identity derived from its X.509 certificate.
+Every Ortrix component has a cryptographic identity derived from its X.509 certificate.
 
 ### Identity Format
 
 ```
-  Subject: CN=gateway.flowd.svc.cluster.local
-  SAN:     DNS:gateway.flowd.svc.cluster.local
-           DNS:gateway.flowd.svc
+  Subject: CN=gateway.ortrix.svc.cluster.local
+  SAN:     DNS:gateway.ortrix.svc.cluster.local
+           DNS:gateway.ortrix.svc
            DNS:gateway
 ```
 
@@ -81,16 +81,16 @@ Identities follow Kubernetes service DNS conventions:
 
 | Component      | Identity                                       |
 |---------------|------------------------------------------------|
-| Gateway        | `gateway.flowd.svc.cluster.local`              |
-| Orchestrator   | `orchestrator-N.flowd.svc.cluster.local`       |
+| Gateway        | `gateway.ortrix.svc.cluster.local`              |
+| Orchestrator   | `orchestrator-N.ortrix.svc.cluster.local`       |
 | Worker Service | `<service-name>.<namespace>.svc.cluster.local` |
 
 ### SPIFFE Integration (Optional)
 
-For environments using SPIFFE/SPIRE, Flowd supports SPIFFE IDs:
+For environments using SPIFFE/SPIRE, Ortrix supports SPIFFE IDs:
 
 ```
-  spiffe://cluster.local/ns/flowd/sa/orchestrator
+  spiffe://cluster.local/ns/ortrix/sa/orchestrator
   spiffe://cluster.local/ns/payments/sa/payment-service
 ```
 
@@ -98,7 +98,7 @@ SPIFFE provides automatic identity bootstrapping and rotation without manual cer
 
 ## Gateway as Security Boundary
 
-The gateway is the **only component exposed** to external traffic. It acts as the security perimeter for the Flowd cluster.
+The gateway is the **only component exposed** to external traffic. It acts as the security perimeter for the Ortrix cluster.
 
 ```
   ┌──────────────────────────────────────────────┐
@@ -143,18 +143,18 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: flowd-orchestrator
+      app: ortrix-orchestrator
   ingress:
     - from:
         - podSelector:
             matchLabels:
-              app: flowd-gateway
+              app: ortrix-gateway
         - podSelector:
             matchLabels:
-              flowd.io/worker: "true"
+              ortrix.io/worker: "true"
         - podSelector:
             matchLabels:
-              app: flowd-orchestrator
+              app: ortrix-orchestrator
       ports:
         - port: 9090
           protocol: TCP
@@ -162,7 +162,7 @@ spec:
 
 ## Capability-Level Authorization
 
-Authorization in Flowd is enforced at the **capability level** — a service can only execute tasks for capabilities it is explicitly allowed to handle.
+Authorization in Ortrix is enforced at the **capability level** — a service can only execute tasks for capabilities it is explicitly allowed to handle.
 
 ### Authorization Model
 
