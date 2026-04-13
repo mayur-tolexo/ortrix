@@ -183,6 +183,154 @@ spec:
           protocol: TCP
 ```
 
+## Secure Worker Connectivity
+
+Ortrix enforces a strict **outbound-only** connection model for workers. This eliminates the need for workers to expose any listening ports, significantly reducing the attack surface.
+
+### Outbound-Only Connections
+
+Workers always initiate connections to orchestrators. Orchestrators never dial worker pods.
+
+```
+  ┌─────────────┐                          ┌───────────────┐
+  │   Worker     │                          │ Orchestrator   │
+  │  (no open    │──outbound TCP/gRPC────▶│  (listens on   │
+  │   ports)     │                          │   port 9090)   │
+  │              │◀═══bidirectional═══════│                │
+  │              │     stream              │                │
+  └─────────────┘                          └───────────────┘
+
+  ✓ Worker initiates connection (outbound only)
+  ✗ Orchestrator does NOT connect to worker
+  ✗ No worker ports are exposed
+```
+
+This model ensures that:
+- Workers have **zero inbound network exposure** for orchestration traffic
+- Compromising an orchestrator cannot be used to directly connect to worker pods
+- Workers behind NAT, service meshes, or restricted network segments can still participate
+
+### mTLS Authentication
+
+Every worker-to-orchestrator connection is secured with **mutual TLS** (mTLS). Both parties present and verify X.509 certificates during the handshake.
+
+```
+  Worker                                  Orchestrator
+    │                                         │
+    │──TLS ClientHello──────────────────────▶│
+    │◀──TLS ServerHello + Server Certificate──│
+    │   (worker verifies orchestrator)        │
+    │──Client Certificate─────────────────▶  │
+    │   (orchestrator verifies worker)        │
+    │◀──Handshake Complete───────────────── │
+    │                                         │
+    │══(encrypted bidirectional stream)══════│
+```
+
+The orchestrator validates:
+1. The worker's certificate is signed by a trusted CA
+2. The certificate is not expired or revoked
+3. The service identity (SAN/CN) is authorized for the declared capabilities
+
+### Service Identity (SPIFFE-Style)
+
+Each worker has a cryptographic service identity embedded in its X.509 certificate. Ortrix supports both standard Kubernetes DNS identities and SPIFFE IDs:
+
+```
+  Standard Kubernetes identity:
+    CN=payment-service.payments.svc.cluster.local
+    SAN=payment-service.payments.svc.cluster.local
+
+  SPIFFE identity:
+    spiffe://cluster.local/ns/payments/sa/payment-service
+```
+
+Service identity is used to:
+- **Authenticate** the worker during mTLS handshake
+- **Authorize** which capabilities the worker can register
+- **Audit** which service executed a given task
+- **Trace** task execution across services
+
+### No Exposed Worker Ports
+
+Workers using the Ortrix SDK do **not** open any listening ports for orchestration traffic. The SDK operates entirely over an outbound connection:
+
+```
+  Traditional worker model (REJECTED):
+    Worker listens on :8080 ← orchestrator connects inbound
+    → Requires NetworkPolicy to allow inbound traffic
+    → Port scanning reveals worker endpoints
+    → Each worker is a potential attack target
+
+  Ortrix worker model (CHOSEN):
+    Worker connects outbound to orchestrator:9090
+    → No inbound ports needed for orchestration
+    → Worker is invisible to port scanners
+    → Attack surface is limited to the orchestrator endpoint
+```
+
+Workers may still expose ports for their own application traffic (HTTP APIs, etc.), but Ortrix orchestration traffic requires zero inbound ports.
+
+### Network Policy Considerations
+
+The outbound-only model simplifies Kubernetes NetworkPolicy configuration:
+
+```yaml
+# Workers: allow outbound to orchestrator only
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: worker-egress
+spec:
+  podSelector:
+    matchLabels:
+      ortrix.io/worker: "true"
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: ortrix-orchestrator
+      ports:
+        - port: 9090
+          protocol: TCP
+```
+
+```yaml
+# Orchestrators: accept inbound from workers and gateway
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: orchestrator-ingress-secure
+spec:
+  podSelector:
+    matchLabels:
+      app: ortrix-orchestrator
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              ortrix.io/worker: "true"
+        - podSelector:
+            matchLabels:
+              app: ortrix-gateway
+        - podSelector:
+            matchLabels:
+              app: ortrix-orchestrator
+      ports:
+        - port: 9090
+          protocol: TCP
+```
+
+This approach:
+- Minimizes the blast radius of a compromised component
+- Follows the principle of least privilege at the network level
+- Works naturally with Kubernetes namespace isolation
+- Is compatible with service mesh policies (Istio, Linkerd)
+
 ## Capability-Level Authorization
 
 Authorization in Ortrix is enforced at the **capability level** — a service can only execute tasks for capabilities it is explicitly allowed to handle.

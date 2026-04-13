@@ -258,6 +258,121 @@ The protobuf wire format adds minimal overhead:
 | 10 KB       | ~20 bytes     | 0.2%       |
 | 64 KB       | ~20 bytes     | 0.03%      |
 
+## Backpressure and Throughput Control
+
+Ortrix implements a comprehensive backpressure system to prevent overload while maintaining high throughput. The system operates at multiple levels: worker-side concurrency limits, orchestrator-side scheduling fairness, and transport-level flow control.
+
+### Avoiding Overload
+
+The orchestrator never pushes tasks to a worker beyond its declared capacity. This is enforced through a credit-based flow control mechanism:
+
+```
+  ┌──────────────────────────────────────────────────────┐
+  │  Overload Prevention                                 │
+  │                                                      │
+  │  Worker registers:  max_concurrent = 10              │
+  │                                                      │
+  │  Orchestrator tracks:                                │
+  │    dispatched = 3                                    │
+  │    available  = 7                                    │
+  │                                                      │
+  │  On task result:                                     │
+  │    dispatched = 2                                    │
+  │    available  = 8                                    │
+  │                                                      │
+  │  When available = 0:                                 │
+  │    → No tasks dispatched to this worker              │
+  │    → Tasks queue in the priority scheduler           │
+  │    → Queue depth metrics exposed for auto-scaling    │
+  └──────────────────────────────────────────────────────┘
+```
+
+### Worker-Side Concurrency Limits
+
+Workers control their own concurrency through the `max_concurrent` setting in the SDK:
+
+```go
+w := sdk.NewWorker("payment-service",
+    sdk.WithMaxConcurrent(10),  // Accept up to 10 simultaneous tasks
+)
+```
+
+The worker SDK enforces this limit locally and communicates it to the orchestrator:
+
+| Parameter         | Default | Description                                  |
+|-------------------|---------|----------------------------------------------|
+| `max_concurrent`  | 100     | Maximum simultaneous tasks per worker        |
+| Dynamic adjustment| Yes     | Worker can update capacity via READY message |
+
+Workers can dynamically reduce capacity under pressure (e.g., high memory usage, slow downstream dependencies):
+
+```
+  Normal:    READY { available_slots: 10 }
+  Pressure:  READY { available_slots: 2 }   ← worker throttling itself
+  Recovery:  READY { available_slots: 10 }  ← worker recovered
+```
+
+### Orchestrator Scheduling Fairness
+
+When capacity is scarce, the orchestrator distributes tasks fairly across workers using weighted scheduling:
+
+```
+  ┌─────────────────────────────────────────────────────────┐
+  │  Fair Distribution Under Contention                     │
+  │                                                         │
+  │  3 workers, each with 2 available slots                 │
+  │  6 pending tasks                                        │
+  │                                                         │
+  │  Fair:     svc-a-1 gets 2, svc-a-2 gets 2, svc-c gets 2│
+  │  Unfair:   svc-a-1 gets 6 (others starved)             │
+  │                                                         │
+  │  Ortrix uses round-robin across equally-scored workers  │
+  │  to prevent dispatch hotspotting.                       │
+  └─────────────────────────────────────────────────────────┘
+```
+
+Fairness rules:
+- **Equal-score workers**: Round-robin dispatch prevents hotspotting
+- **Priority queues**: Weighted fair queuing prevents starvation of low-priority tasks
+- **Capability fairness**: Each capability's tasks are scheduled independently
+
+### Circuit Breaker Behavior
+
+When a worker consistently fails tasks, the orchestrator applies circuit breaker logic to prevent cascading failures:
+
+```
+  ┌──────────────────────────────────────────────────┐
+  │  Circuit Breaker States                          │
+  │                                                  │
+  │  CLOSED ──(failures > threshold)──▶ OPEN         │
+  │    │                                   │         │
+  │    │   Normal operation.               │ No tasks│
+  │    │   Tasks dispatched                │ sent to │
+  │    │   normally.                       │ worker. │
+  │    │                                   │         │
+  │    │                                   ▼         │
+  │    │                              HALF-OPEN      │
+  │    │                                   │         │
+  │    │              Probe: send 1 task   │         │
+  │    │                                   │         │
+  │    ◀──────(success)───────────────────│         │
+  │                                                  │
+  │    OPEN ──(timeout expires)──▶ HALF-OPEN         │
+  │    HALF-OPEN ──(probe fails)──▶ OPEN             │
+  └──────────────────────────────────────────────────┘
+```
+
+| Parameter              | Default | Description                               |
+|------------------------|---------|-------------------------------------------|
+| `failure_threshold`    | 5       | Consecutive failures to open circuit      |
+| `open_timeout`         | 30s     | Time before probing a failed worker       |
+| `half_open_max_tasks`  | 1       | Tasks to send during probe phase          |
+
+The circuit breaker prevents:
+- Repeated dispatch to a consistently failing worker
+- Cascading failures when a downstream service is degraded
+- Wasted capacity on tasks that will likely fail
+
 ## Performance Tuning Parameters
 
 | Parameter               | Default   | Description                              |

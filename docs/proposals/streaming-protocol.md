@@ -1,46 +1,60 @@
-# Proposal: Streaming Protocol
+# Proposal: Streaming Protocol for Worker Communication
 
 ## Table of Contents
 
 - [Status](#status)
-- [Problem Statement](#problem-statement)
+- [Summary](#summary)
 - [Motivation](#motivation)
-- [Design Details](#design-details)
-  - [gRPC Bidirectional Streaming](#grpc-bidirectional-streaming)
-  - [Connection Lifecycle](#connection-lifecycle)
-  - [Backpressure Handling](#backpressure-handling)
-- [Alternatives Considered](#alternatives-considered)
-- [Tradeoffs](#tradeoffs)
-- [Testing Strategy](#testing-strategy)
-- [Rollout Plan](#rollout-plan)
+- [Protocol Definition](#protocol-definition)
+  - [RPC Signature](#rpc-signature)
+  - [Message Types](#message-types)
+- [Capacity Signaling](#capacity-signaling)
+  - [Registration Capacity](#registration-capacity)
+  - [Dynamic Capacity Updates](#dynamic-capacity-updates)
+  - [Orchestrator Capacity Tracking](#orchestrator-capacity-tracking)
+- [Flow Control](#flow-control)
+  - [Application-Level Flow Control](#application-level-flow-control)
+  - [Transport-Level Flow Control](#transport-level-flow-control)
+  - [Backpressure Propagation](#backpressure-propagation)
+- [Connection Lifecycle](#connection-lifecycle)
+  - [Establishment](#establishment)
+  - [Steady State](#steady-state)
+  - [Graceful Shutdown](#graceful-shutdown)
+  - [Ungraceful Disconnection](#ungraceful-disconnection)
+- [Failure Handling](#failure-handling)
+  - [Stream Disconnection](#stream-disconnection)
+  - [Worker Reconnection](#worker-reconnection)
+  - [Task Timeout](#task-timeout)
+  - [Duplicate Result Handling](#duplicate-result-handling)
+  - [Orchestrator Failover](#orchestrator-failover)
+- [Configuration](#configuration)
+- [Security Considerations](#security-considerations)
 
 ---
+
+
 
 ## Status
 
-**Proposed**
+**Accepted** — This proposal defines the streaming protocol used for all orchestrator ↔ worker communication in Ortrix.
 
----
+## Summary
 
-## Problem Statement
-
-Ortrix uses persistent gRPC bidirectional streams between orchestrators and workers for task dispatch and result collection. The streaming protocol needs a well-defined specification covering connection establishment, message framing, lifecycle management, error handling, and backpressure to ensure reliable operation under varying network conditions and load patterns.
-
----
+Ortrix uses a bidirectional gRPC streaming protocol between orchestrators and workers. Workers initiate outbound connections to orchestrators. All task dispatch, result collection, heartbeats, and capacity signaling flow over a single long-lived stream per worker. This proposal defines the protocol semantics, flow control, connection lifecycle, and failure handling.
 
 ## Motivation
 
-- **Reliability**: Without a well-defined connection lifecycle, edge cases (reconnection storms, half-open connections, stale streams) cause task loss or duplicate dispatch.
-- **Performance**: Backpressure handling prevents orchestrators from overwhelming slow workers, avoiding cascading failures.
-- **Operability**: A clear protocol specification makes it possible to implement compatible SDKs in multiple languages and debug streaming issues systematically.
+Traditional workflow engines use pull-based dispatch (workers poll a queue). This introduces polling latency, wasted resources on empty polls, and scaling tradeoffs between latency and load. Ortrix replaces this with push-based streaming, but a push model requires careful protocol design to avoid overwhelming workers.
 
----
+This proposal ensures that:
+- Task dispatch is near-instantaneous (~1ms vs ~500ms for polling)
+- Workers are never overloaded beyond their declared capacity
+- Connection failures are handled gracefully with minimal task impact
+- The protocol is simple enough to implement in any language
 
-## Design Details
+## Protocol Definition
 
-### gRPC Bidirectional Streaming
-
-The core streaming interface uses gRPC bidirectional streaming:
+### RPC Signature
 
 ```protobuf
 service WorkerService {
@@ -48,151 +62,255 @@ service WorkerService {
 }
 ```
 
-**Worker → Orchestrator (WorkerMessage):**
+### Message Types
 
-| Message Type         | Purpose                            |
-|---------------------|------------------------------------|
-| WorkerRegistration   | Announce capabilities on connect   |
-| TaskResult           | Return task execution result       |
-| Heartbeat            | Liveness signal with load metrics  |
+**WorkerMessage** (Worker → Orchestrator):
 
-**Orchestrator → Worker (OrchestratorMessage):**
+| Field           | Type              | Description                              |
+|-----------------|-------------------|------------------------------------------|
+| registration    | WorkerRegistration| Initial capabilities + capacity          |
+| task_result     | TaskResult        | Completed task result                    |
+| heartbeat       | Heartbeat         | Liveness signal                          |
+| capacity_update | CapacityUpdate    | Updated available slots                  |
 
-| Message Type | Purpose                              |
-|-------------|--------------------------------------|
-| Task         | Push a task for execution            |
-| Ack          | Acknowledge receipt of worker msg    |
-| DrainSignal  | Request graceful worker drain        |
+**OrchestratorMessage** (Orchestrator → Worker):
 
-**Message ordering guarantees:**
+| Field   | Type | Description                              |
+|---------|------|------------------------------------------|
+| task    | Task | Task to execute                          |
+| ack     | Ack  | Acknowledgment of worker message         |
 
-- Messages within a single stream are delivered in order (gRPC guarantee over HTTP/2)
-- The orchestrator does not send tasks until the initial WorkerRegistration is acknowledged
-- TaskResult messages reference specific task IDs for correlation
+## Capacity Signaling
 
-### Connection Lifecycle
+Workers control how many tasks they can handle concurrently. The orchestrator **must** respect this limit.
 
-```
-┌──────────────┐                          ┌───────────────┐
-│   Worker      │                          │ Orchestrator   │
-│   (SDK)       │                          │                │
-├──────────────┤                          ├────────────────┤
-│ CONNECTING   │──TLS Handshake─────────▶│                │
-│              │──HTTP/2 Setup──────────▶│                │
-│              │──StreamTasks()─────────▶│  STREAM_OPEN   │
-│              │                          │                │
-│ REGISTERING  │──WorkerRegistration────▶│  validate      │
-│              │  {id, capabilities}      │  capabilities  │
-│              │◀──Ack──────────────────│                │
-│ ACTIVE       │                          │  WORKER_READY  │
-│              │                          │                │
-│              │◀──Task(s)──────────────│  dispatching   │
-│              │──TaskResult────────────▶│                │
-│              │──Heartbeat─────────────▶│                │
-│              │                          │                │
-│ DRAINING     │◀──DrainSignal─────────│  DRAINING      │
-│              │  (finish current tasks)  │                │
-│              │──TaskResult (final)────▶│                │
-│ DISCONNECTED │──stream close──────────▶│  DISCONNECTED  │
-└──────────────┘                          └───────────────┘
-```
+### Registration Capacity
 
-**Connection states:**
-
-| State         | Description                                             |
-|---------------|---------------------------------------------------------|
-| CONNECTING    | TLS handshake and HTTP/2 setup in progress              |
-| REGISTERING   | Stream open, sending WorkerRegistration                 |
-| ACTIVE        | Fully connected, sending/receiving tasks                |
-| DRAINING      | Finishing in-flight tasks, not accepting new ones       |
-| DISCONNECTED  | Stream closed, cleanup in progress                      |
-
-**Reconnection policy:**
-
-- Exponential backoff starting at 100ms, max 30s
-- Jitter added to prevent reconnection storms
-- Max reconnection attempts configurable (default: unlimited)
-- On reconnect, worker re-sends WorkerRegistration to rebuild state
-
-**Keepalive and liveness:**
-
-- gRPC keepalive pings every 30s (transport-level)
-- Application-level heartbeats every 5s from worker
-- Orchestrator marks worker as dead after 3 missed heartbeats (15s)
-
-### Backpressure Handling
-
-Backpressure is implemented at three layers:
-
-**Layer 1: gRPC flow control (HTTP/2 window)**
-
-- HTTP/2 flow control limits in-flight bytes per stream
-- If the worker stops reading, the orchestrator's send buffer fills and writes block
-- Prevents unbounded memory growth on both sides
-
-**Layer 2: Application-level capacity reporting**
+On connection, the worker sends its maximum concurrent capacity:
 
 ```
-Heartbeat {
-  timestamp:     int64
-  active_tasks:  int32   // currently executing
-  max_capacity:  int32   // max concurrent tasks
-  queue_depth:   int32   // local queue size
+WorkerRegistration {
+  worker_id: "svc-a-pod-xyz"
+  capabilities: ["process_payment", "refund_payment"]
+  max_concurrent: 10
+  metadata: {
+    node: "node-3"
+    zone: "us-east-1a"
+  }
 }
 ```
 
-- The orchestrator tracks each worker's capacity from heartbeat data
-- Dispatch is skipped for workers at or above capacity
-- Workers can dynamically adjust max_capacity based on resource usage
+### Dynamic Capacity Updates
 
-**Layer 3: Orchestrator-to-client backpressure**
-
-- When partition queue depth exceeds threshold, the orchestrator returns `RESOURCE_EXHAUSTED` to the gateway
-- Gateway propagates rejection to clients with a `Retry-After` header
-- Prevents overloading the system from the ingress side
-
-**Adaptive dispatch rate:**
+Workers can update their capacity at any time by sending a `CapacityUpdate` message:
 
 ```
-dispatch_rate(worker) = min(
-    worker.max_capacity - worker.active_tasks,
-    partition_queue_limit - partition_queue_depth,
-    global_rate_limit
-)
+CapacityUpdate {
+  available_slots: 5    // Reduced from 10 due to memory pressure
+  reason: "memory_pressure"
+}
 ```
 
----
+Use cases for dynamic capacity updates:
+- **Memory pressure**: Worker detects high memory usage and reduces capacity
+- **Downstream degradation**: Worker's downstream dependency is slow, reducing throughput
+- **Deployment drain**: Worker is shutting down and wants to stop receiving new tasks
+- **Recovery**: Worker recovers from a transient issue and increases capacity
 
-## Alternatives Considered
+### Orchestrator Capacity Tracking
 
-| Alternative             | Pros                              | Cons                                     | Why Not                                      |
-|------------------------|-----------------------------------|------------------------------------------|----------------------------------------------|
-| Unary RPCs per task     | Simpler, stateless                | Connection overhead per task, no push     | Defeats push-based model                     |
-| WebSocket streaming     | Browser-compatible                | No built-in flow control, less typed      | Workers are services, not browsers           |
-| Custom TCP protocol     | Maximum control                   | Huge implementation effort, no ecosystem  | gRPC provides everything needed              |
+The orchestrator maintains a capacity counter per worker:
 
----
+```
+available_slots = max_concurrent - in_flight_tasks
 
-## Tradeoffs
+On task dispatch:    in_flight_tasks++, available_slots--
+On task result:      in_flight_tasks--, available_slots++
+On capacity update:  available_slots = message.available_slots
+```
 
-- **Persistent connections vs statelessness**: Persistent streams enable push-based dispatch but require connection management and make load balancing harder (connections are sticky).
-- **Application heartbeats vs transport keepalive**: Application heartbeats carry load metadata but add message overhead. Transport keepalive is lightweight but carries no application data.
-- **Strict backpressure vs best-effort**: Strict backpressure prevents overload but can cause upstream queuing. Best-effort dispatch is simpler but risks cascading failure.
+**Invariant**: The orchestrator never dispatches a task to a worker with `available_slots <= 0`.
 
----
+## Flow Control
 
-## Testing Strategy
+### Application-Level Flow Control
 
-- **Unit tests**: Test message serialization, connection state machine transitions, backpressure calculations
-- **Integration tests**: Orchestrator + worker streaming end-to-end, verify task dispatch and result collection over real gRPC streams
-- **Failure tests**: Stream disconnection during task dispatch, reconnection under load, half-open connection detection
-- **Backpressure tests**: Overwhelm a worker and verify dispatch rate adapts, verify `RESOURCE_EXHAUSTED` propagation to clients
-- **Longevity tests**: Run streams for extended periods, verify no resource leaks (goroutines, file descriptors, memory)
+Ortrix implements application-level flow control on top of gRPC:
 
----
+```
+  ┌─────────────┐                          ┌───────────────┐
+  │   Worker     │                          │ Orchestrator   │
+  ├─────────────┤                          ├────────────────┤
+  │             │──REGISTER(cap=10)──────▶│  slots[w]=10   │
+  │             │                          │                │
+  │             │◀──Task(t1)─────────────│  slots[w]=9    │
+  │             │◀──Task(t2)─────────────│  slots[w]=8    │
+  │             │                          │                │
+  │             │──Result(t1)────────────▶│  slots[w]=9    │
+  │             │                          │                │
+  │             │──CapUpdate(slots=3)────▶│  slots[w]=3    │
+  │             │                          │  (won't exceed)│
+  │             │                          │                │
+  │  (0 slots)  │   ◀── no tasks sent ──  │  slots[w]=0    │
+  │             │                          │                │
+  │             │──Result(t2)────────────▶│  slots[w]=1    │
+  │             │◀──Task(t3)─────────────│  slots[w]=0    │
+  └─────────────┘                          └────────────────┘
+```
 
-## Rollout Plan
+### Transport-Level Flow Control
 
-1. **Phase 1**: Implement core bidirectional streaming with registration, task dispatch, and result collection. Deploy with basic heartbeat-based liveness detection.
-2. **Phase 2**: Add capacity-aware backpressure. Workers report load in heartbeats, orchestrator adjusts dispatch rate accordingly.
-3. **Phase 3**: Add drain signal support for graceful shutdown. Implement reconnection with exponential backoff and jitter.
+gRPC (HTTP/2) provides transport-level flow control via window updates. If a worker's receive buffer fills up (e.g., slow handler execution), HTTP/2 flow control automatically slows the sender. This acts as a safety net below the application-level protocol.
+
+### Backpressure Propagation
+
+When all workers for a given capability are at capacity:
+
+1. Tasks remain in the orchestrator's priority queue
+2. No dispatch attempts are made for that capability
+3. Queue depth metrics are exposed (`ortrix_queue_depth{capability="..."}`)
+4. Auto-scaling systems can react to growing queue depth
+
+## Connection Lifecycle
+
+### Establishment
+
+```
+  Worker SDK                              Orchestrator
+    │                                         │
+    │──TCP connect─────────────────────────▶│
+    │──TLS handshake (mTLS)───────────────▶│
+    │  (both sides verify certificates)     │
+    │──HTTP/2 connection established──────▶│
+    │──StreamTasks RPC opened─────────────▶│
+    │──WorkerRegistration message──────────▶│
+    │   {id, capabilities, max_concurrent}  │
+    │◀──Ack──────────────────────────────│
+    │                                         │
+    │   === stream is now active ===          │
+```
+
+### Steady State
+
+During normal operation, the stream carries interleaved messages:
+
+```
+  Time →
+    W→O: Heartbeat
+    O→W: Task(t1)
+    O→W: Task(t2)
+    W→O: Result(t1)
+    W→O: Heartbeat
+    O→W: Task(t3)
+    W→O: Result(t2)
+    W→O: CapacityUpdate(slots=5)
+    W→O: Result(t3)
+    W→O: Heartbeat
+```
+
+Heartbeats are sent at a configurable interval (default: 10s). The orchestrator considers a worker dead if no message is received within the heartbeat timeout (default: 30s).
+
+### Graceful Shutdown
+
+When a worker is shutting down (e.g., pod termination):
+
+```
+  1. Worker sends CapacityUpdate { available_slots: 0 }
+     → Orchestrator stops sending new tasks
+  2. Worker completes all in-flight tasks
+     → Sends TaskResult for each
+  3. Worker closes the stream
+     → Orchestrator removes worker from capability index
+```
+
+This ensures zero task loss during rolling deployments.
+
+### Ungraceful Disconnection
+
+When a worker disconnects unexpectedly (crash, node failure, network partition):
+
+```
+  1. Orchestrator detects stream EOF or heartbeat timeout
+  2. Orchestrator marks all in-flight tasks for that worker as FAILED
+  3. Failed tasks are re-enqueued (if within retry limit)
+  4. Worker is removed from the capability index
+  5. If worker reconnects, it goes through full registration again
+```
+
+## Failure Handling
+
+### Stream Disconnection
+
+| Failure                    | Detection               | Recovery                           |
+|---------------------------|-------------------------|------------------------------------|
+| Worker crash              | Stream EOF              | Re-enqueue in-flight tasks         |
+| Network partition         | Heartbeat timeout (30s) | Mark worker dead, re-enqueue tasks |
+| Orchestrator crash        | Stream EOF (worker-side)| Worker reconnects to new orchestrator |
+| TLS certificate expiry    | Handshake failure       | Worker retries after cert rotation |
+
+### Worker Reconnection
+
+The Worker SDK implements automatic reconnection with exponential backoff:
+
+```
+  Attempt 1: wait 100ms  → connect
+  Attempt 2: wait 200ms  → connect
+  Attempt 3: wait 400ms  → connect
+  Attempt 4: wait 800ms  → connect
+  ...
+  Max backoff: 30s
+  Jitter: ±25% (prevents thundering herd on orchestrator restart)
+```
+
+On reconnection, the worker sends a fresh `WorkerRegistration`. The orchestrator treats it as a new connection — no state is assumed from the previous stream.
+
+### Task Timeout
+
+If a worker does not return a result within the task deadline:
+
+```
+  1. Orchestrator marks the task as FAILED (timeout)
+  2. Task is re-enqueued if within retry limit
+  3. Worker's in-flight count is decremented
+  4. If the worker later sends a result for the timed-out task, it is ignored
+```
+
+### Duplicate Result Handling
+
+Results for already-completed or timed-out tasks are silently discarded. Task state transitions are guarded by the WAL — only valid transitions are recorded.
+
+### Orchestrator Failover
+
+When an orchestrator instance fails:
+
+```
+  1. Partition lease expires (not renewed)
+  2. Another orchestrator acquires the lease
+  3. New owner replays WAL to reconstruct state
+  4. Workers detect stream disconnect and reconnect
+  5. Workers may connect to a different orchestrator
+     (discovered via gateway routing metadata)
+  6. In-flight tasks from the failed orchestrator are
+     recovered from WAL in DISPATCHED state and re-enqueued
+```
+
+## Configuration
+
+| Parameter                     | Default | Description                                |
+|-------------------------------|---------|---------------------------------------------|
+| `worker.heartbeat_interval`   | 10s     | How often workers send heartbeats           |
+| `worker.heartbeat_timeout`    | 30s     | Time before marking a worker as dead        |
+| `worker.max_concurrent`       | 100     | Default max concurrent tasks per worker     |
+| `worker.reconnect_backoff`    | 100ms   | Initial reconnection backoff                |
+| `worker.reconnect_max`        | 30s     | Maximum reconnection backoff                |
+| `worker.reconnect_jitter`     | 0.25    | Jitter factor for reconnection timing       |
+| `task.default_timeout`        | 5m      | Default task execution timeout              |
+| `stream.max_message_size`     | 4MB     | Maximum gRPC message size                   |
+
+## Security Considerations
+
+- All streams use mTLS — no plaintext connections are allowed
+- Worker identity is extracted from the TLS certificate, not self-reported
+- Capability authorization is checked on every registration
+- Reconnecting workers must re-authenticate (no session resumption)
+- Network policies should restrict worker egress to orchestrator pods only

@@ -80,6 +80,29 @@ See [docs/comparison.md](docs/comparison.md) for a detailed analysis.
 
 ---
 
+## 🔐 Secure & Efficient Execution Model
+
+Ortrix is built on a **worker-initiated, zero-exposed-port** communication model with intelligent load distribution:
+
+- **Worker-initiated connections** — Workers open outbound gRPC streams to orchestrators. Orchestrators never dial worker pods. This eliminates inbound attack surface on workers.
+- **No exposed worker ports** — Workers require zero listening ports for orchestration traffic. They are invisible to port scanners and network probes.
+- **mTLS everywhere** — Every connection uses mutual TLS with X.509 service identity. Both sides authenticate on every connection.
+- **Backpressure-based scheduling** — Workers advertise available capacity. The orchestrator respects these limits and never overloads a worker. Tasks queue safely when capacity is exhausted.
+- **Intelligent load distribution** — The orchestrator combines locality scores (same-node, same-zone) with real-time load data (available slots) to select the optimal worker for each task.
+
+```
+  Worker ──(outbound mTLS)──▶ Orchestrator
+           │                       │
+           │  READY(capacity=10)   │
+           │◀──Task──────────────│  (respects capacity)
+           │──Result─────────────▶│
+           │◀──Task──────────────│  (load-aware selection)
+```
+
+See [docs/security.md](docs/security.md) and [docs/proposals/streaming-protocol.md](docs/proposals/streaming-protocol.md) for full details.
+
+---
+
 ## Quick Start
 
 ### Prerequisites
@@ -177,6 +200,7 @@ ortrix/
 | [Performance](docs/performance.md) | Latency analysis, batching, WAL optimization |
 | [Comparison](docs/comparison.md) | Ortrix vs Temporal |
 | [Future Work](docs/future-work.md) | Research directions: rebalancing, replication, multi-region |
+| [Streaming Protocol](docs/proposals/streaming-protocol.md) | Protocol design: capacity signaling, flow control, failure handling |
 | [Proposals](docs/proposals/) | Design proposals for upcoming features |
 | [Roadmap](docs/roadmap.md) | Phased development plan with goals and deliverables |
 | [Testing](docs/testing.md) | Testing strategy, coverage requirements, CI enforcement |
