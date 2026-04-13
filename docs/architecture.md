@@ -132,6 +132,70 @@ The SDK:
 
 This model eliminates the need for separate worker infrastructure. Any service that imports the SDK becomes an Ortrix worker, maintaining its own identity and lifecycle.
 
+## Worker Communication Model
+
+Ortrix uses an **outbound-only** connection model for worker communication. Workers always initiate connections to orchestrators — orchestrators never dial worker pods directly.
+
+### Connection Direction
+
+```
+  ┌─────────────┐                          ┌───────────────┐
+  │   Worker     │──outbound gRPC stream──▶│ Orchestrator   │
+  │  (SDK)       │                          │                │
+  │              │◀──tasks via stream──────│                │
+  │              │──results via stream────▶│                │
+  └─────────────┘                          └───────────────┘
+
+  Direction of TCP connection:   Worker → Orchestrator
+  Direction of task flow:        Orchestrator → Worker (over the same stream)
+  Direction of results:          Worker → Orchestrator (over the same stream)
+```
+
+Workers open a long-lived bidirectional gRPC stream to the orchestrator. All subsequent communication — task dispatch, result collection, heartbeats, and capacity signaling — flows over this single stream.
+
+### Why Workers Connect Outbound
+
+| Reason                    | Explanation                                            |
+|---------------------------|--------------------------------------------------------|
+| No exposed worker ports   | Workers do not listen on any port for orchestrator traffic. This eliminates an entire class of network attack surface. |
+| Firewall-friendly         | Outbound connections work naturally with restrictive network policies and egress-only firewall rules. |
+| NAT/mesh compatible       | Workers behind NAT, service meshes, or network boundaries can still connect to orchestrators. |
+| Simplified RBAC           | Workers only need egress permission; orchestrators only need to accept inbound connections. |
+| Dynamic scaling           | New worker pods connect on startup without requiring orchestrator reconfiguration. |
+
+### Control Plane vs Data Plane Communication
+
+```
+  ┌───────────────────────────────────────────────────────────┐
+  │ Control Plane                                             │
+  │                                                           │
+  │   Client ──▶ Gateway ──▶ routing metadata                │
+  │                          (partition → orchestrator)       │
+  └───────────────────────────────────────────────────────────┘
+
+  ┌───────────────────────────────────────────────────────────┐
+  │ Data Plane                                                │
+  │                                                           │
+  │   Worker ═══(bidirectional gRPC stream)═══▶ Orchestrator  │
+  │                                                           │
+  │   - Tasks pushed to worker over stream                    │
+  │   - Results returned over same stream                     │
+  │   - Heartbeats and capacity signals over same stream      │
+  │   - No gateway involvement in task execution              │
+  └───────────────────────────────────────────────────────────┘
+```
+
+The control plane (Gateway) handles routing discovery and administrative operations. The data plane (Orchestrator ↔ Workers) handles all task execution exclusively via persistent bidirectional streams initiated by workers. This separation ensures that the hot path — task dispatch and result collection — never traverses the gateway and is never blocked by control plane operations.
+
+### Connection Lifecycle
+
+1. **Worker starts**: The embedded SDK opens a gRPC connection to the orchestrator
+2. **mTLS handshake**: Both sides authenticate via mutual TLS certificates
+3. **Stream established**: A bidirectional `StreamTasks` RPC is opened
+4. **Registration**: Worker sends capabilities and initial capacity over the stream
+5. **Steady state**: Orchestrator pushes tasks; worker returns results
+6. **Reconnection**: On disconnect, the SDK automatically reconnects with exponential backoff
+
 ## Component Summary
 
 | Component      | Port  | Role                                      |

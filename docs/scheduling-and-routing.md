@@ -190,6 +190,89 @@ Step 5 - Load Score:
 Final: svc-a-1 selected (score: 2.7 vs 1.1)
 ```
 
+## Load-Aware Worker Selection
+
+Beyond capability and locality, Ortrix uses **real-time load information** to make scheduling decisions. The orchestrator continuously tracks each worker's available capacity and uses this data to distribute tasks intelligently.
+
+### Least-Loaded Strategy
+
+When multiple workers match a task's requirements, the orchestrator prefers the worker with the most available capacity:
+
+```
+  Task: {type: "process_payment"}
+
+  Candidates after capability + health filtering:
+    svc-a-1: 3/10 slots used  → 70% free
+    svc-a-2: 8/10 slots used  → 20% free
+    svc-c-1: 1/10 slots used  → 90% free
+
+  Least-loaded selection: svc-c-1 (most available capacity)
+```
+
+This spreads load evenly across workers and prevents individual workers from becoming bottlenecks while others sit idle.
+
+### Capacity-Based Scheduling
+
+Workers advertise their capacity via `READY` messages on the gRPC stream. The orchestrator uses this to build a real-time capacity map:
+
+```
+  ┌──────────────────────────────────────────────────────────────┐
+  │  Orchestrator Capacity Map                                   │
+  │                                                              │
+  │  Worker        Capability         Max    Used    Available   │
+  │  svc-a-1       process_payment    10     3       7           │
+  │  svc-a-2       process_payment    10     8       2           │
+  │  svc-c-1       process_payment    10     1       9           │
+  │  svc-b-1       send_email         20     5       15          │
+  │  svc-b-2       send_email         20     20      0 (FULL)    │
+  └──────────────────────────────────────────────────────────────┘
+```
+
+Key behaviors:
+- **Full workers are skipped**: Workers with `available = 0` are excluded from selection
+- **Capacity updates are real-time**: Each `TaskResult` and explicit `READY` message updates the map
+- **No stale data**: If a worker disconnects, its capacity is immediately removed
+
+### Locality + Load Hybrid Decision
+
+Ortrix combines locality scores with load scores to make a balanced scheduling decision. Neither factor dominates — the system finds workers that are both close and available.
+
+```
+  Combined Score = (locality_weight × locality_score) + (load_weight × load_score)
+
+  Default weights:
+    locality_weight = 0.6
+    load_weight     = 0.4
+```
+
+Example with hybrid scoring:
+
+```
+  Task: {type: "process_payment"}
+  Orchestrator: zone us-east-1a
+
+  ┌────────────────────────────────────────────────────────────┐
+  │  Worker     Zone          Locality   Load(free)  Combined  │
+  │  svc-a-1    us-east-1a   2 (same)   70%         1.76      │
+  │  svc-a-2    us-east-1a   2 (same)   20%         1.36      │
+  │  svc-c-1    us-west-2b   1 (diff)   90%         1.32      │
+  │                                                            │
+  │  Calculation for svc-a-1:                                  │
+  │    (0.6 × 2) + (0.4 × 0.7 × 2) = 1.2 + 0.56 = 1.76      │
+  │  Calculation for svc-a-2:                                  │
+  │    (0.6 × 2) + (0.4 × 0.2 × 2) = 1.2 + 0.16 = 1.36      │
+  │  Calculation for svc-c-1:                                  │
+  │    (0.6 × 1) + (0.4 × 0.9 × 2) = 0.6 + 0.72 = 1.32      │
+  │                                                            │
+  │  Selected: svc-a-1 (highest combined score)                │
+  └────────────────────────────────────────────────────────────┘
+```
+
+This hybrid approach ensures that:
+- A nearby but heavily loaded worker is not always preferred over a remote idle worker
+- A remote idle worker is not always preferred over a nearby worker with some capacity
+- The weights can be tuned per deployment to match network topology costs
+
 ## Priority Queues and Fairness
 
 Tasks are enqueued with a priority level. The scheduler ensures high-priority tasks are dispatched first while preventing starvation of lower-priority tasks.
