@@ -1,6 +1,14 @@
-# Ortrix
+<p align="center">
+  <img src="assets/logo/ortrix-logo.png" width="200" alt="Ortrix Logo" />
+</p>
 
-**A low-latency, Kubernetes-native distributed workflow orchestrator.**
+<h1 align="center">Ortrix</h1>
+
+<p align="center">
+  Kubernetes-native low-latency distributed workflow orchestrator
+</p>
+
+---
 
 Ortrix is a low-latency, Kubernetes-native distributed workflow orchestrator built on partitioned execution, streaming task dispatch, and locality-aware scheduling. It delivers sub-millisecond task dispatch — orders of magnitude faster than poll-based systems.
 
@@ -201,6 +209,7 @@ make docker-all
 
 ```
 ortrix/
+├── assets/logo/         # Logo and branding assets
 ├── api/proto/           # gRPC/Protobuf service definitions
 ├── cmd/
 │   ├── gateway/         # Gateway service entry point (gRPC + HTTP/REST)
@@ -269,6 +278,31 @@ Ortrix is actively evolving. Key areas of upcoming development:
 See [docs/future-work.md](docs/future-work.md) for the full roadmap with design details, ASCII diagrams, and tradeoff analysis.
 
 **Want to contribute?** These are excellent areas for new contributors. Check the roadmap and pick an area that interests you.
+
+---
+
+## 🎨 Branding
+
+The Ortrix logo represents:
+
+- Distributed orchestration (graph structure)
+- Streaming execution (flow arrows)
+- Go-native ecosystem (gopher mascot)
+- Central orchestration engine (core cube)
+
+### Assets
+
+- `assets/logo/ortrix-logo.png`
+- `assets/logo/favicon.png`
+
+Use the logo consistently across documentation and UI surfaces.
+
+> **Note:** The logo is optimized for light backgrounds. When using on dark surfaces, consider adding a light backdrop or padding.
+
+The logo assets are reusable across:
+- Documentation sites
+- Swagger UI branding
+- CLI splash screens
 
 ---
 
