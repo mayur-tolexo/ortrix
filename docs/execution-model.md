@@ -117,6 +117,89 @@ service WorkerService {
 | Task      | Push a task for execution            |
 | Ack       | Acknowledge receipt of worker msg    |
 
+## Push with Backpressure (Flow-Controlled Push)
+
+Ortrix uses a push-based model, but push does **not** mean uncontrolled push. The orchestrator respects worker-advertised capacity and never dispatches more tasks than a worker can handle. This model is called **flow-controlled push**.
+
+### Why Push ≠ Uncontrolled Push
+
+A naive push model would overwhelm workers:
+
+```
+  WRONG: Orchestrator fires tasks blindly
+    Orchestrator ──task──▶ Worker (busy)
+    Orchestrator ──task──▶ Worker (busy)
+    Orchestrator ──task──▶ Worker (overloaded!)
+```
+
+Ortrix avoids this by requiring workers to **advertise available capacity**. The orchestrator only pushes tasks when the worker has declared it can accept them.
+
+### Capacity Advertisement
+
+Workers send a capacity signal as part of their registration and on every status update:
+
+```
+  Worker → Orchestrator:  READY { max_concurrent: 10, available_slots: 7 }
+```
+
+The orchestrator maintains a real-time view of each worker's available capacity:
+
+```
+  ┌──────────────────────────────────────────────────┐
+  │  Worker Capacity Table (Orchestrator)            │
+  │                                                  │
+  │  Worker        Max    In-Flight    Available     │
+  │  svc-a-1       10     3            7             │
+  │  svc-a-2       10     10           0  (full)     │
+  │  svc-b-1       20     5            15            │
+  └──────────────────────────────────────────────────┘
+```
+
+### Flow Control Protocol
+
+```
+  ┌─────────────┐                          ┌───────────────┐
+  │   Worker     │                          │ Orchestrator   │
+  ├─────────────┤                          ├────────────────┤
+  │             │──Register + READY(10)──▶│  records       │
+  │             │  {capacity: 10}          │  capacity=10   │
+  │             │                          │                │
+  │             │◀──Task─────────────────│  capacity=9    │
+  │             │◀──Task─────────────────│  capacity=8    │
+  │             │◀──Task─────────────────│  capacity=7    │
+  │             │                          │                │
+  │             │──TaskResult────────────▶│  capacity=8    │
+  │             │  (slot freed)            │                │
+  │             │                          │                │
+  │             │──READY(capacity=5)─────▶│  capacity=5    │
+  │             │  (explicit update)       │  (updated)     │
+  │             │                          │                │
+  │             │   (no tasks sent when    │                │
+  │             │    capacity = 0)         │                │
+  └─────────────┘                          └────────────────┘
+```
+
+### Detailed Flow
+
+1. **Worker connects**: Opens a bidirectional gRPC stream to the orchestrator
+2. **Worker sends READY**: Includes maximum concurrent capacity (e.g., `max_concurrent: 10`)
+3. **Orchestrator records capacity**: Adds worker to the capability index with its available slots
+4. **Orchestrator sends tasks**: Only dispatches tasks if `available_slots > 0`
+5. **Worker processes task**: Executes the handler and sends back a `TaskResult`
+6. **Capacity updated**: On result receipt, orchestrator increments available slots
+7. **Explicit capacity update**: Worker can send a new `READY` message at any time to adjust capacity (e.g., under memory pressure)
+
+### Backpressure Guarantees
+
+| Guarantee                       | How                                           |
+|---------------------------------|-----------------------------------------------|
+| No overloading                  | Orchestrator tracks per-worker available slots |
+| Worker controls concurrency     | Worker sets `max_concurrent` at registration   |
+| Dynamic adjustment              | Worker sends updated `READY` messages anytime  |
+| Queue buffering                 | Tasks wait in priority queue when all workers are full |
+| No task drops                   | Tasks are never dropped — they wait for capacity |
+| gRPC-level flow control         | Underlying HTTP/2 flow control provides transport-level backpressure |
+
 ## Task Lifecycle
 
 A task progresses through well-defined states:
