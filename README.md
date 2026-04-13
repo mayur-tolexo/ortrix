@@ -174,6 +174,23 @@ flowd/
 | [Security](docs/security.md) | mTLS, service identity, authorization |
 | [Performance](docs/performance.md) | Latency analysis, batching, WAL optimization |
 | [Comparison](docs/comparison.md) | Flowd vs Temporal |
+| [Future Work](docs/future-work.md) | Roadmap: rebalancing, replication, multi-region |
+
+---
+
+## 🚧 Future Work
+
+Flowd is actively evolving. Key areas of upcoming development:
+
+- **Locality-aware partition migration** — Move partitions closer to their execution zones, reducing cross-zone latency and egress costs
+- **Load-based rebalancing** — Detect hot orchestrator nodes and automatically redistribute partitions based on CPU, queue depth, and latency
+- **Hot partition mitigation** — Sub-partitioning and key-based sharding to break up workflow hotspots
+- **Partition replication & fast failover** — Warm standby nodes with continuous WAL streaming for near-instant promotion
+- **Multi-region support** — Geo-distributed orchestration with cross-region WAL replication and global routing
+
+See [docs/future-work.md](docs/future-work.md) for the full roadmap with design details, ASCII diagrams, and tradeoff analysis.
+
+**Want to contribute?** These are excellent areas for new contributors. Check the roadmap and pick an area that interests you.
 
 ---
 

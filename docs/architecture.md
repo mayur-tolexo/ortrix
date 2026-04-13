@@ -168,3 +168,21 @@ Once a worker is connected, the data plane operates without any gateway involvem
 ```
 
 No polling. No queue consumption delays. No gateway hop.
+
+## Future Evolution
+
+Flowd's current architecture provides a solid foundation. The following areas represent the next evolution of the system:
+
+### Adaptive Partition Placement
+
+Today, partitions are assigned to orchestrators using hash-based distribution. Future work will introduce **locality-aware placement** — tracking where tasks are actually executed and migrating partitions closer to their execution zones. This reduces cross-zone network hops and cloud egress costs. Placement hints (region, tenant, service affinity) will allow workflows to influence their initial assignment.
+
+### Load-Based Balancing
+
+Hash-based partitioning distributes workflows uniformly by key but not by load. Load-based rebalancing will monitor per-node CPU, queue depth, and dispatch latency, then redistribute partitions from hot nodes to cold nodes. Hot partition mitigation via sub-partitioning will handle cases where a single workflow creates disproportionate load.
+
+### Partition Replication
+
+Current failover requires lease expiry followed by full WAL replay. Warm standby replication will continuously stream WAL entries to a follower node, enabling near-instant promotion on failure. This reduces failover time from seconds to milliseconds for latency-sensitive workloads.
+
+See [Future Work](future-work.md) for the complete roadmap.
