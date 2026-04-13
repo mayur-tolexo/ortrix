@@ -1,6 +1,6 @@
-.PHONY: all build build-gateway build-orchestrator test lint run-gateway run-orchestrator \
-       proto docker-gateway docker-orchestrator docker-all kind-create kind-delete clean \
-       swagger help
+.PHONY: all build build-gateway build-orchestrator test test-coverage test-coverage-report \
+       lint run-gateway run-orchestrator proto proto-clean docker-gateway docker-orchestrator \
+       docker-all kind-create kind-delete clean swagger help
 
 # Binary output directory
 BIN_DIR := bin
@@ -48,6 +48,21 @@ build-orchestrator: ## Build the orchestrator binary
 test: ## Run tests with race detection
 	$(GO) test ./... -v -race -count=1
 
+test-coverage: ## Run tests with coverage report
+	$(GO) test ./... -v -race -count=1 -coverprofile=coverage.out
+	@echo "✓ Coverage report generated: coverage.out"
+
+test-coverage-report: test-coverage ## Run tests and display coverage report
+	$(GO) tool cover -html=coverage.out -o coverage.html
+	@echo "✓ HTML coverage report generated: coverage.html"
+	@echo "Opening coverage report in browser..."
+	@open coverage.html || xdg-open coverage.html || echo "Please open coverage.html manually"
+
+test-coverage-by-package: test-coverage ## Show coverage by package
+	@$(GO) tool cover -func=coverage.out | grep -E "^github.com/mayur-tolexo/ortrix" | sort
+	@echo ""
+	@$(GO) tool cover -func=coverage.out | tail -1
+
 lint: ## Run linter
 	golangci-lint run ./...
 
@@ -72,11 +87,18 @@ run-orchestrator: build-orchestrator ## Run orchestrator server
 # Protobuf generation
 # ──────────────────────────────────────────────
 
-proto: ## Generate protobuf Go code
+proto: ## Generate protobuf Go code from .proto files
+	@echo "Generating protobuf code..."
 	protoc \
 		--go_out=. --go_opt=paths=source_relative \
 		--go-grpc_out=. --go-grpc_opt=paths=source_relative \
 		api/proto/ortrix.proto
+	@echo "✓ Protobuf files generated successfully"
+
+proto-clean: ## Clean generated protobuf files
+	@echo "Cleaning generated protobuf files..."
+	rm -f api/proto/*.pb.go
+	@echo "✓ Generated protobuf files cleaned"
 
 # ──────────────────────────────────────────────
 # Docker
