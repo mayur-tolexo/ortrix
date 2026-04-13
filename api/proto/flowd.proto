@@ -1,0 +1,97 @@
+syntax = "proto3";
+
+package flowd;
+
+option go_package = "github.com/mayur-tolexo/flowd/api/proto";
+
+// Task represents a unit of work to be dispatched to a worker.
+message Task {
+  string id = 1;
+  string type = 2;
+  bytes payload = 3;
+  map<string, string> metadata = 4;
+  int32 priority = 5;
+  int64 created_at = 6;
+}
+
+// TaskResult represents the result returned by a worker after executing a task.
+message TaskResult {
+  string task_id = 1;
+  bool success = 2;
+  bytes output = 3;
+  string error = 4;
+  int64 completed_at = 5;
+}
+
+// SubmitTaskRequest is the request to submit a new task.
+message SubmitTaskRequest {
+  Task task = 1;
+}
+
+// SubmitTaskResponse is the response after submitting a task.
+message SubmitTaskResponse {
+  string task_id = 1;
+  bool accepted = 2;
+  string message = 3;
+}
+
+// TaskStatusRequest is the request to query the status of a task.
+message TaskStatusRequest {
+  string task_id = 1;
+}
+
+// TaskStatusResponse is the response containing the status of a task.
+message TaskStatusResponse {
+  string task_id = 1;
+  string status = 2;
+  TaskResult result = 3;
+}
+
+// WorkerMessage is the message sent from the worker to the orchestrator
+// over a bidirectional stream.
+message WorkerMessage {
+  string worker_id = 1;
+  oneof payload {
+    WorkerRegistration registration = 2;
+    TaskResult result = 3;
+    Heartbeat heartbeat = 4;
+  }
+}
+
+// OrchestratorMessage is the message sent from the orchestrator to the worker
+// over a bidirectional stream.
+message OrchestratorMessage {
+  oneof payload {
+    Task task = 1;
+    Ack ack = 2;
+  }
+}
+
+// WorkerRegistration is sent by a worker when it first connects,
+// declaring its capabilities.
+message WorkerRegistration {
+  string worker_id = 1;
+  repeated string capabilities = 2;
+}
+
+// Heartbeat is sent periodically by the worker to signal liveness.
+message Heartbeat {
+  string worker_id = 1;
+  int64 timestamp = 2;
+}
+
+// Ack is an acknowledgement from the orchestrator.
+message Ack {
+  string message = 1;
+}
+
+// GatewayService is the external-facing API for submitting and querying tasks.
+service GatewayService {
+  rpc SubmitTask(SubmitTaskRequest) returns (SubmitTaskResponse);
+  rpc GetTaskStatus(TaskStatusRequest) returns (TaskStatusResponse);
+}
+
+// WorkerService handles bidirectional streaming between workers and the orchestrator.
+service WorkerService {
+  rpc StreamTasks(stream WorkerMessage) returns (stream OrchestratorMessage);
+}
